@@ -625,15 +625,15 @@ public:
 		yaw_stand.AddShowCallback(callbacks::IsAntiAimModeStand);
 		RegisterElement(&yaw_stand);
 
-		distortion_speed.setup("speed", XOR("distortion_speed"), 1.f, 100.f, true, 0, 1.f, 1.f);
-		distortion_speed.AddShowCallback(callbacks::IsAntiAimModeStand);
-		distortion_speed.AddShowCallback(callbacks::IsDistortion);
-		RegisterElement(&distortion_speed);
+		//distortion_speed.setup("speed", XOR("distortion_speed"), 1.f, 100.f, true, 0, 1.f, 1.f);
+		//distortion_speed.AddShowCallback(callbacks::IsAntiAimModeStand);
+		//distortion_speed.AddShowCallback(callbacks::IsDistortion);
+		//RegisterElement(&distortion_speed);
 
-		distortion_swap_amount.setup("amount", XOR("distortion_swap_amount"), -180.f, 180.f, true, 0, 1.f, 1.f, XOR(L"°"));
-		distortion_swap_amount.AddShowCallback(callbacks::IsAntiAimModeStand);
-		distortion_swap_amount.AddShowCallback(callbacks::IsDistortion);
-		RegisterElement(&distortion_swap_amount);
+		//distortion_swap_amount.setup("amount", XOR("distortion_swap_amount"), -180.f, 180.f, true, 0, 1.f, 1.f, XOR(L"°"));
+		//distortion_swap_amount.AddShowCallback(callbacks::IsAntiAimModeStand);
+		//distortion_swap_amount.AddShowCallback(callbacks::IsDistortion);
+		//RegisterElement(&distortion_swap_amount);
 
 		jitter_range_stand.setup("", XOR("jitter_range_stnd"), 1.f, 180.f, false, 0, 45.f, 5.f, XOR(L"°"));
 		jitter_range_stand.AddShowCallback(callbacks::IsAntiAimModeStand);
@@ -1050,6 +1050,7 @@ public:
 	Checkbox      chams_local_scope;
 	Checkbox      draw_angles;
 	Checkbox      chams_fake;
+	Checkbox      chams_custom_texture;
 	Dropdown	  chams_fake_mat;
 	Colorpicker   chams_fake_col;
 	Slider        chams_fake_blend;
@@ -1080,7 +1081,8 @@ public:
 	Slider        spread_xhair_blend;
 	Checkbox      pen_crosshair;
 	Checkbox      pen_damage;
-	MultiDropdown indicators;
+	//MultiDropdown indicators;
+	Checkbox indicators;
 	Checkbox      tracers;
 	Checkbox      impact_beams;
 	Colorpicker   impact_beams_color;
@@ -1151,10 +1153,17 @@ public:
 		RegisterElement(&enemy_radar);
 		
 		draw_angles.setup(XOR("draw angles"), XOR("draw_angles"));
-		RegisterElement(&draw_angles);
+		//RegisterElement(&draw_angles);
 
 		chams_fake.setup(XOR("fake chams"), XOR("chams_fake"));
 		RegisterElement(&chams_fake);
+
+		chams_custom_texture.setup(XOR("chams material"), XOR("chams_custom_texture"));
+		RegisterElement(&chams_custom_texture);
+
+		chamstype.setup(XOR("chams type"), XOR("chamstype"), { XOR("texture"), XOR("flat"), XOR("rainbow chams") });
+		chamstype.AddShowCallback(callbacks::IsCustomTexture);
+		RegisterElement(&chamstype);
 
 		chams_fake_mat.setup(XOR("fake material"), XOR("chams_fake_mat"), { XOR("normal"), XOR("flat") });
 		chams_fake_mat.AddShowCallback(callbacks::IsFakeChams);
@@ -1167,9 +1176,6 @@ public:
 		chams_fake_blend.setup("", XOR("chams_fake_blend"), 10.f, 100.f, false, 0, 100.f, 1.f, XOR(L"%"));
 		chams_fake_blend.AddShowCallback(callbacks::IsFakeChams);
 		RegisterElement(&chams_fake_blend);
-
-		chamstype.setup(XOR("chams type"), XOR("chamstype"), { XOR("texture"), XOR("flat"), XOR("glow"), XOR("wireframe"), XOR("rainbow chams") });
-		RegisterElement(&chamstype);
 
 		/*chams_local_scope.setup(XOR("blend when scoped"), XOR("chams_local_scope"));
 		chams_local_scope.AddShowCallback(callbacks::IsLocalChams);
@@ -1246,7 +1252,7 @@ public:
 		pen_damage.setup(XOR("penetration crosshair damage"), XOR("pen_damage"));
 		RegisterElement(&pen_damage, 1);
 
-		indicators.setup(XOR("indicators"), XOR("indicators"), { XOR("lby"), XOR("lag compensation") });
+		indicators.setup(XOR("indicators"), XOR("indicators")/*, { XOR("lby"), XOR("lag compensation"), XOR("fake latency"), XOR("dmg override"), XOR("baim on key") }*/);
 		RegisterElement(&indicators, 1);
 
 		tracers.setup(XOR("grenade simulation"), XOR("tracers"));
@@ -2588,6 +2594,9 @@ public:
 		clantag.setup(XOR("clantag"), XOR("clantag"));
 		RegisterElement(&clantag, 1);
 
+		watermark.setup(XOR("watermark"), XOR("watermark"));
+		RegisterElement(&watermark, 1);
+
 		killsay.setup(XOR("killsay"), XOR("killsay"));
 		RegisterElement(&killsay, 1);
 
@@ -2596,9 +2605,6 @@ public:
 
 		slide_walk.setup(XOR("slide walk"), XOR("slide_walk"));
 		RegisterElement(&slide_walk, 1);
-
-		indicators.setup(XOR("status indicators"), XOR("draw_indicators"));
-		RegisterElement(&indicators, 1);
 
 		viewmodel_override.setup(XOR("override viewmodel"), XOR("viewmodel_override"));
 		RegisterElement(&viewmodel_override, 1);

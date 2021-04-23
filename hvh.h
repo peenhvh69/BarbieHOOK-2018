@@ -40,6 +40,7 @@ public:
 	size_t m_base_angle;
 	float  m_auto_time;
 	bool   m_fakeduck;
+	bool   m_should_work;
 	bool invert{};
 
 	bool   m_step_switch;

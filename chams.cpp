@@ -130,11 +130,11 @@ void Chams::init() {
 	debugdrawflat = g_csgo.m_material_system->FindMaterial(XOR("debug/debugdrawflat"), XOR("Model textures"));
 	debugdrawflat->IncrementReferenceCount();
 
-	skeet = g_csgo.m_material_system->FindMaterial(XOR("chams"), XOR("Model textures"));
-	skeet->IncrementReferenceCount();
+	//skeet = g_csgo.m_material_system->FindMaterial(XOR("chams"), XOR("Model textures"));
+	//skeet->IncrementReferenceCount();
 
-	onetap = g_csgo.m_material_system->FindMaterial(XOR("Overlay"), XOR("Model textures"));
-	onetap->IncrementReferenceCount();
+	//onetap = g_csgo.m_material_system->FindMaterial(XOR("Overlay"), XOR("Model textures"));
+	//onetap->IncrementReferenceCount();
 }
 
 bool Chams::OverridePlayer(int index) {
@@ -369,12 +369,6 @@ void Chams::RenderPlayer(Player* player) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
 			}
 			if (g_menu.main.visuals.chamstype.get() == 2) {
-				SetupMaterial(skeet, g_menu.main.players.chams_local_col.get(), false);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 3) {
-				SetupMaterial(onetap, g_menu.main.players.chams_local_col.get(), false);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 4) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 			}
 		}
@@ -402,12 +396,6 @@ void Chams::RenderPlayer(Player* player) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_invis.get(), true);
 			}
 			if (g_menu.main.visuals.chamstype.get() == 2) {
-				SetupMaterial(skeet, g_menu.main.players.chams_enemy_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 3) {
-				SetupMaterial(onetap, g_menu.main.players.chams_enemy_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 4) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 			}
 			player->DrawModel();
@@ -422,12 +410,6 @@ void Chams::RenderPlayer(Player* player) {
 			SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_vis.get(), false);
 		}
 		if (g_menu.main.visuals.chamstype.get() == 2) {
-			SetupMaterial(skeet, g_menu.main.players.chams_enemy_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 3) {
-			SetupMaterial(onetap, g_menu.main.players.chams_enemy_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 4) {
 			SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 		}
 		player->DrawModel();
@@ -444,12 +426,6 @@ void Chams::RenderPlayer(Player* player) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_friendly_invis.get(), true);
 			}
 			if (g_menu.main.visuals.chamstype.get() == 2) {
-				SetupMaterial(skeet, g_menu.main.players.chams_friendly_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 3) {
-				SetupMaterial(onetap, g_menu.main.players.chams_friendly_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 4) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 			}
 			player->DrawModel();
@@ -463,12 +439,6 @@ void Chams::RenderPlayer(Player* player) {
 			SetupMaterial(debugdrawflat, g_menu.main.players.chams_friendly_vis.get(), false);
 		}
 		if (g_menu.main.visuals.chamstype.get() == 2) {
-			SetupMaterial(skeet, g_menu.main.players.chams_friendly_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 3) {
-			SetupMaterial(onetap, g_menu.main.players.chams_friendly_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 4) {
 			SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 		}
 		player->DrawModel();

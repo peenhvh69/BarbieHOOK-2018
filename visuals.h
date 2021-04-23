@@ -116,7 +116,7 @@ public:
     void OffScreen(Player* player, int alpha);
     void DrawPlayer(Player* player);
     bool GetPlayerBoxRect(Player* player, Rect& box);
-    void DrawHistorySkeleton(Player* player, int opacity);
+    void DrawHistorySkeleton(Player* player, int opacity, int index);
     void DrawSkeleton(Player* player, int opacity);
     void RenderGlow();
     void DrawHitboxMatrix(LagRecord* record, Color col, float time);

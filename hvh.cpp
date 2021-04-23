@@ -519,8 +519,6 @@ void HVH::DoRealAntiAim() {
 					// opposite.
 				case 3:
 					g_cl.m_cmd->m_view_angles.y += 180.f;
-					if (g_menu.main.antiaim.pitch_fake_stand.get())
-						g_cl.m_cmd->m_view_angles.x = -89.f;
 					break;
 
 					// z.
@@ -532,21 +530,16 @@ void HVH::DoRealAntiAim() {
 
 				case 5:
 					g_cl.m_cmd->m_view_angles.y += custom;
-					if (g_menu.main.antiaim.pitch_fake_stand.get())
-						g_cl.m_cmd->m_view_angles.x = -89.f;
 					break;
 
 				case 6:
 					//g_cl.m_cmd->m_view_angles.y += 180.f;
 					negative ? g_cl.m_cmd->m_view_angles.y += 110.f : g_cl.m_cmd->m_view_angles.y -= 110.f;
 					negative = !negative;
-					if (g_menu.main.antiaim.pitch_fake_stand.get())
-						g_cl.m_cmd->m_view_angles.x = -89.f;
 					break;
 					//random
 				case 7:
-					negative ? g_cl.m_cmd->m_view_angles.y += rand() % 45 : g_cl.m_cmd->m_view_angles.y -= rand() % 45;
-					negative = !negative;
+					g_cl.m_cmd->m_view_angles.y += rand() % 180;
 					break;
 				}
 			}
@@ -626,11 +619,11 @@ void HVH::DoRealAntiAim() {
 
 				if (m_flicks % 2)
 				{
-					direction = std::fmod((g_csgo.m_globals->m_curtime * (speed * 20.f)), 360.f);
+					direction = std::fmod((g_csgo.m_globals->m_curtime * (5.f * 20.f)), 120.f);
 				}
 				else
 				{
-					direction = std::fmod(-(g_csgo.m_globals->m_curtime * (speed * 20.f)), 360.f);
+					direction = std::fmod(-(g_csgo.m_globals->m_curtime * (5.f * 20.f)), 120.f);
 				}
 
 				g_cl.m_cmd->m_view_angles.y += direction;

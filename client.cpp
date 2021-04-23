@@ -23,8 +23,8 @@ ulong_t __stdcall Client::init(void* arg) {
 }
 
 void Client::DrawHUD() {
-	/*if (!g_menu.main.misc.watermark.get())
-		return;*/
+	if (!g_menu.main.misc.watermark.get())
+		return;
 
 	//if (!g_csgo.m_engine->IsInGame())
 	//	return;
@@ -326,6 +326,7 @@ void Client::OnPaint() {
 	g_grenades.paint();
 	g_notify.think();
 	g_indicators.Indicators();
+	g_visuals.IndicateAngles();
 
 	DrawHUD();
 	ClanTag();

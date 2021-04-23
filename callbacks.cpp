@@ -111,6 +111,10 @@ void callbacks::HiddenCvar() {
 	g_cl.UnlockHiddenConvars();
 }
 
+bool callbacks::IsCustomTexture() {
+	return g_menu.main.visuals.chams_custom_texture.get();
+}
+
 // menu elements
 bool callbacks::IsRainbowMenu() {
 	return g_menu.main.config.rainbow_menu.get();

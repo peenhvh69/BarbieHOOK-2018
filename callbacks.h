@@ -22,6 +22,7 @@ namespace callbacks {
 	bool IsRainbowMenu();
 	bool IsHitmarker();
 	bool ViewFOVOverride();
+	bool IsCustomTexture();
 	bool FOVOverride();
 
 	// aimbot

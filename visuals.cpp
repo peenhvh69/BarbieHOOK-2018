@@ -105,7 +105,7 @@ void Visuals::IndicateAngles()
 		}
 
 		if (g_menu.main.antiaim.enable.get()) {
-			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_angle.y)) + pos.y, pos.z);
+			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_radar.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_radar.y)) + pos.y, pos.z);
 
 			if (render::WorldToScreen(fake_pos, draw_tmp))
 			{
@@ -113,8 +113,7 @@ void Visuals::IndicateAngles()
 				render::hud.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "fake angle", render::ALIGN_LEFT);
 			}
 
-			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(g_cl.m_lby_angles.y)) + pos.x,
-				50.f * sin(math::deg_to_rad(g_cl.m_lby_angles.y)) + pos.y, pos.z);
+			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(g_cl.m_cmd->m_view_angles.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_cmd->m_view_angles.y)) + pos.y, pos.z);
 
 			if (render::WorldToScreen(lby_pos, draw_tmp))
 			{
@@ -405,8 +404,13 @@ void Visuals::Spectators() {
 		const std::string& name = spectators[i];
 
 		//watermark comment POG
-
-		render::menu_shade.string(g_cl.m_width - 10, 30 + (i * (h - 1)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+		if (g_menu.main.misc.watermark.get()) {
+			render::menu_shade.string(g_cl.m_width - 10, 22 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+		}
+		else {
+			render::menu_shade.string(g_cl.m_width - 10, 8 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+		}
+		
 
 		//render::menu_shade.string(g_cl.m_width - 20, (g_cl.m_height / 2) - (total_size / 2) + (i * (h - 1)),
 			//{ 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
@@ -423,7 +427,7 @@ void Visuals::StatusIndicators() {
 	std::vector< Indicator_t > indicators{ };
 
 	// LC
-	if (g_menu.main.visuals.indicators.get(1) && ((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND))) {
+	if (g_menu.main.visuals.indicators.get() && ((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND))) {
 		Indicator_t ind{ };
 		ind.color = g_cl.m_lagcomp ? 0xff15c27b : 0xff0000ff;
 		ind.text = XOR("LC");
@@ -432,7 +436,7 @@ void Visuals::StatusIndicators() {
 	}
 
 	// LBY
-	if (g_menu.main.visuals.indicators.get(0)) {
+	if (g_menu.main.visuals.indicators.get()) {
 		// get the absolute change between current lby and animated angle.
 		float change = std::abs(math::NormalizedAngle(g_cl.m_body - g_cl.m_angle.y));
 
@@ -442,15 +446,30 @@ void Visuals::StatusIndicators() {
 		indicators.push_back(ind);
 	}
 
-
 	// PING
-	/*if (g_menu.main.visuals.indicators.get(2)) {
+	if (g_menu.main.visuals.indicators.get()) {
 		Indicator_t ind{ };
 		ind.color = g_aimbot.m_fake_latency ? 0xff15c27b : 0xff0000ff;
 		ind.text = XOR("PING");
 
 		indicators.push_back(ind);
-	}*/
+	}
+
+	if (g_menu.main.visuals.indicators.get()) {
+		Indicator_t ind{};
+		ind.color = g_aimbot.m_baim_toggle ? 0xff15c27b : 0xff0000ff;
+		ind.text = XOR("BAIM");
+
+		indicators.push_back(ind);
+	}
+
+	if (g_menu.main.visuals.indicators.get()) {
+		Indicator_t ind{};
+		ind.color = g_aimbot.m_damage_toggle ? 0xff15c27b : 0xff0000ff;
+		ind.text = XOR("DMG");
+
+		indicators.push_back(ind);
+	}
 
 	if (indicators.empty())
 		return;
@@ -509,14 +528,14 @@ void Visuals::StatusIndicators() {
 		color1337 = { 124,195,13,255 }; // green color
 	}
 
-	render::rect_filled(13, g_cl.m_height - 74 + 26, 48, 4, { 10, 10, 10, 125 });
-	render::rect_filled(13, g_cl.m_height - 74 + 26, add * 40, 2, color1337);
+	//render::rect_filled(13, g_cl.m_height - 74 + 26, 48, 4, { 10, 10, 10, 125 });
+	//render::rect_filled(13, g_cl.m_height - 74 + 26, add * 40, 2, color1337);
 	//render::arccircle(12 + 60, g_cl.m_height - 74 + 23 - 9, 5, 9, 0, 360, { 0,0,0,50 });
 	//render::arccircle(12 + 60, g_cl.m_height - 74 + 23 - 9, 6, 8, 0, 340 * add, color1337);
 	//render::drawCircle(90, 87, 100, { 255,255,255,255 });
-	if (!((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND)) && g_menu.main.visuals.indicators.get(0)) {
-		//render::draw_arc(12 + 60, g_cl.m_height - 75 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
-		//render::draw_arc(12 + 60, g_cl.m_height - 75 + 23 - 9, 7, 0, 340 * add, 3, color1337);
+	if (!((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND)) && g_menu.main.visuals.indicators.get()) {
+		render::draw_arc(12 + 60, g_cl.m_height - 74 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
+		render::draw_arc(12 + 60, g_cl.m_height - 74 + 23 - 9, 7, 0, 340 * add, 3, color1337);
 	}
 	/*std::string add1 = tfm::format(XOR("%i"), add);
 	render::esp_small.string(500, 500, color1337, add1, render::ALIGN_CENTER);*/
@@ -1517,12 +1536,13 @@ bool Visuals::GetPlayerBoxRect(Player* player, Rect& box) {
 	return true;
 }
 
-void Visuals::DrawHistorySkeleton(Player* player, int opacity) {
+void Visuals::DrawHistorySkeleton(Player* player, int opacity, int index) {
 	const model_t* model;
 	studiohdr_t* hdr;
 	mstudiobone_t* bone;
 	AimPlayer* data;
 	LagRecord* record;
+	BoneArray     matrix[128];
 	int           parent;
 	vec3_t        bone_pos, parent_pos;
 	vec2_t        bone_pos_screen, parent_pos_screen;
@@ -1540,12 +1560,19 @@ void Visuals::DrawHistorySkeleton(Player* player, int opacity) {
 	if (!hdr)
 		return;
 
-	data = &g_aimbot.m_players[player->index() - 1];
-	if (!data)
+	data = &g_aimbot.m_players[index - 1];
+	if (!data || data->m_records.empty())
 		return;
 
 	record = g_resolver.FindLastRecord(data);
 	if (!record)
+		return;
+
+	// get bone matrix.
+	if (!player->SetupBones(matrix, 128, BONE_USED_BY_ANYTHING, g_csgo.m_globals->m_curtime))
+		return;
+
+	if (player->dormant())
 		return;
 
 	for (int i{ }; i < hdr->m_num_bones; ++i) {

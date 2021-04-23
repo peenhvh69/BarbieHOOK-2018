@@ -87,6 +87,16 @@ bool Hooks::CreateMove(float time, CUserCmd* cmd) {
 
 	g_cl.OnTick(cmd);
 
+	if (g_hvh.m_should_work) {
+		if (*g_cl.m_packet)
+			g_cl.m_angle = cmd->m_view_angles;
+		else
+			g_cl.m_real_angle = cmd->m_view_angles;
+	}
+	else {
+		g_cl.m_angle = g_cl.m_real_angle = cmd->m_view_angles;
+	}
+
 	return false;
 }
 

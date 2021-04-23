@@ -135,12 +135,12 @@ void Resolver::MatchShot(AimPlayer* data, LagRecord* record) {
 void Resolver::SetMode(LagRecord* record) {
 	float speed = record->m_velocity.length_2d();
 
-	if ((record->m_flags & FL_ONGROUND) && speed > 1.f && !record->m_fake_walk && !GetAsyncKeyState(g_menu.main.aimbot.override.get()))
-		record->m_mode = Modes::RESOLVE_WALK;
-
 	// if on ground, not moving or fakewalking.
 	if ((record->m_flags & FL_ONGROUND) && (speed < 1.f || record->m_fake_walk) && !GetAsyncKeyState(g_menu.main.aimbot.override.get()))
 		record->m_mode = Modes::RESOLVE_STAND;
+
+	else if ((record->m_flags & FL_ONGROUND) && speed > 1.f && !record->m_fake_walk)
+		record->m_mode = Modes::RESOLVE_WALK;
 
 	// if not on ground.
 	else if (!(record->m_flags & FL_ONGROUND) && !GetAsyncKeyState(g_menu.main.aimbot.override.get()))
@@ -163,11 +163,11 @@ void Resolver::ResolveAngles(Player* player, LagRecord* record) {
 		record->m_eye_angles.x = 90.f;
 
 	// we arrived here we can do the acutal resolve.
-	if (record->m_mode == Modes::RESOLVE_WALK)
-		ResolveWalk(data, record);
-
-	else if (record->m_mode == Modes::RESOLVE_STAND)
+	if (record->m_mode == Modes::RESOLVE_STAND)
 		ResolveStand(data, record, player);
+
+	else if (record->m_mode == Modes::RESOLVE_WALK)
+		ResolveWalk(data, record);
 
 	else if (record->m_mode == Modes::RESOLVE_AIR)
 		ResolveAir(data, record, player);
@@ -184,19 +184,18 @@ void Resolver::ResolveWalk(AimPlayer* data, LagRecord* record) {
 	record->m_eye_angles.y = record->m_body;
 
 	// delay body update.
-	//data->m_body_update = record->m_anim_time + 0.22f;
+	data->m_body_update = record->m_anim_time + 0.22f;
 
 	// reset stand and body index.
 	data->m_stand_index = 0;
 	data->m_stand_index2 = 0;
 	data->m_body_index = 0;
-	data->m_last_move = 0;
-	data->m_unknown_move = 0;
 
-	record->m_resolver_mode = "LBY";
 	// copy the last record that this player was walking
 	// we need it later on because it gives us crucial data.
 	std::memcpy(&data->m_walk_record, record, sizeof(LagRecord));
+	record->m_mode = Modes::RESOLVE_WALK;
+	record->m_resolver_mode = "MOVING";
 }
 
 float Resolver::GetLBYRotatedYaw(float lby, float yaw)
@@ -229,14 +228,16 @@ void Resolver::ResolveYawBruteforce(LagRecord* record, Player* player, AimPlayer
 	if (!local_player)
 		return;
 
+	float away = GetAwayAngle(record);
+
 	record->m_mode = Modes::RESOLVE_STAND;
 
 	const float at_target_yaw = math::CalcAngle(player->m_vecOrigin(), local_player->m_vecOrigin()).y;
 
-	switch (data->m_stand_index % 8)
+	switch (data->m_stand_index % 9)
 	{
 	case 0:
-		record->m_eye_angles.y = record->m_body;
+		record->m_eye_angles.y = away + 180.f;
 		break;
 	case 1:
 		record->m_eye_angles.y = -145.f;
@@ -258,6 +259,9 @@ void Resolver::ResolveYawBruteforce(LagRecord* record, Player* player, AimPlayer
 		break;
 	case 7:
 		record->m_eye_angles.y = -50.f;
+		break;
+	case 8:
+		record->m_eye_angles.y = away;
 		break;
 	}
 }
@@ -412,6 +416,8 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record, Player* player) 
 		StandNS(data, record);
 		return;
 	}
+	//we need this for the moving resolver
+	float speed = record->m_velocity.length_2d();
 
 	// get predicted away angle for the player.
 	float away = GetAwayAngle(record);
@@ -431,7 +437,8 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record, Player* player) 
 		}
 	}
 
-	if (delta < .22f) // can't flick if they moved .22 seconds ago so its just their lby
+
+    if (delta < .22f) // can't flick if they moved .22 seconds ago so its just their lby
 	{
 		record->m_eye_angles.y = move->m_body;
 
@@ -509,27 +516,22 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record, Player* player) 
 	{
 		switch (data->m_stand_index2 % 6)
 		{
+		case 0:
+			record->m_eye_angles.y = away + 180.f;
+			break;
 		case 1:
-			record->m_eye_angles.y = away + 180;
+			record->m_eye_angles.y = record->m_body;
 			break;
-
 		case 2:
-			record->m_eye_angles.y = away + 110;
+			record->m_eye_angles.y = record->m_body + 180.f;
 			break;
-
 		case 3:
-			record->m_eye_angles.y = away - 110;
+			record->m_eye_angles.y = record->m_body + 110.f;
 			break;
-
 		case 4:
-			record->m_eye_angles.y = away + data->m_body;
+			record->m_eye_angles.y = record->m_body - 110.f;
 			break;
-
 		case 5:
-			record->m_eye_angles.y = away - data->m_body;
-			break;
-
-		case 6:
 			record->m_eye_angles.y = away;
 			break;
 		}
@@ -808,9 +810,10 @@ void Resolver::AntiFreestand(LagRecord* record) {
 
 	// construct vector of angles to test.
 	std::vector< AdaptiveAngle > angles{ };
+	angles.emplace_back(away + 180.f);
 	angles.emplace_back(away - 180.f);
-	angles.emplace_back(away + 90.f);
 	angles.emplace_back(away - 90.f);
+	angles.emplace_back(away + 90.f);
 
 	// start the trace at the your shoot pos.
 	vec3_t start = g_cl.m_local->GetShootPosition();
