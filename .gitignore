@@ -3,6 +3,4 @@
 /.vs/
 /Release/
 /output/
-\ReleaseEx\
-ReleaseEx/resolver.obj
-ReleaseEx/resolver.obj
+ReleaseEx/
