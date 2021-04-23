@@ -462,7 +462,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
@@ -584,7 +586,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
@@ -706,7 +710,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
@@ -828,7 +834,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
@@ -950,7 +958,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
@@ -1072,7 +1082,9 @@ void AimPlayer::SetupHitboxes(LagRecord* record, bool history) {
 		// only, on key.
 		if (g_input.GetKeyState(g_menu.main.aimbot.baim_key.get())) {
 			only = true;
-			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::PREFER });
+			m_hitboxes.push_back({ HITBOX_BODY, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_CHEST, HitscanMode::NORMAL });
+			m_hitboxes.push_back({ HITBOX_PELVIS, HitscanMode::NORMAL });
 		}
 
 		// only baim conditions have been met.
