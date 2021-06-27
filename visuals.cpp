@@ -87,38 +87,47 @@ void Visuals::IndicateAngles()
 	if (!g_menu.main.visuals.draw_angles.get())
 		return;
 
+	if (!g_csgo.m_input->CAM_IsThirdPerson())
+		return;
+
 	if (!g_cl.m_local || g_cl.m_local->m_iHealth() < 1)
 		return;
 
-	const auto pos = g_cl.m_local->GetRenderOrigin();
+	const auto& pos = g_cl.m_local->GetRenderOrigin();
 	vec2_t tmp;
 
 	if (render::WorldToScreen(pos, tmp))
 	{
 		vec2_t draw_tmp;
-		const vec3_t real_pos(50.f * std::cos(math::deg_to_rad(g_cl.m_real_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_real_angle.y)) + pos.y, pos.z);
+		const vec3_t real_pos(50.f * std::cos(math::deg_to_rad(g_cl.m_radar.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_radar.y)) + pos.y, pos.z);
 
 		if (render::WorldToScreen(real_pos, draw_tmp))
 		{
 			render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 });
-			render::hud.string(draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 }, "real angle", render::ALIGN_LEFT);
+			render::esp_small.string(draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 }, "FAKE", render::ALIGN_LEFT);
 		}
 
-		if (g_menu.main.antiaim.enable.get()) {
-			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_radar.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_radar.y)) + pos.y, pos.z);
+		if (g_menu.main.antiaim.fake_yaw.get())
+		{
+			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_angle.y)) + pos.y, pos.z);
 
 			if (render::WorldToScreen(fake_pos, draw_tmp))
 			{
 				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 });
-				render::hud.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "fake angle", render::ALIGN_LEFT);
+				render::esp_small.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "REAL", render::ALIGN_LEFT);
 			}
+		}
 
-			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(g_cl.m_cmd->m_view_angles.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_cmd->m_view_angles.y)) + pos.y, pos.z);
+		if (g_menu.main.antiaim.body_fake_stand.get() == 1 || g_menu.main.antiaim.body_fake_stand.get() == 2 || g_menu.main.antiaim.body_fake_stand.get() == 3 || g_menu.main.antiaim.body_fake_stand.get() == 4 || g_menu.main.antiaim.body_fake_stand.get() == 5 || g_menu.main.antiaim.body_fake_stand.get() == 6)
+		{
+			float lby = g_cl.m_local->m_flLowerBodyYawTarget();
+			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(lby)) + pos.x,
+				50.f * sin(math::deg_to_rad(lby)) + pos.y, pos.z);
 
 			if (render::WorldToScreen(lby_pos, draw_tmp))
 			{
 				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 });
-				render::hud.string(draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 }, "lby angle", render::ALIGN_LEFT);
+				render::esp_small.string(draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 }, "LBY", render::ALIGN_LEFT);
 			}
 		}
 	}
@@ -248,61 +257,31 @@ void Visuals::Hitmarker() {
 	render::rect_filled(x / 2 + 8, y / 2 - 8, 1, 1, { 200, 200, 200, alpha });
 	render::rect_filled(x / 2 + 9, y / 2 - 9, 1, 1, { 200, 200, 200, alpha });
 	render::rect_filled(x / 2 + 10, y / 2 - 10, 1, 1, { 200, 200, 200, alpha });
-}
 
-/*void Visuals::IndicateAngles()
-{
-	if (!g_csgo.m_engine->IsInGame() && !g_csgo.m_engine->IsConnected())
-		return;
+	// damage indicator above head
+	std::string out = tfm::format(XOR("%i\n"), g_shots.iHitDmg);
 
-	if (!g_menu.main.antiaim.draw_angles.get())
-		return;
+	for (int i{ 1 }; i <= g_csgo.m_globals->m_max_clients; ++i) {
+		Player* player = g_csgo.m_entlist->GetClientEntity< Player* >(i);
 
-	if (!g_cl.m_local || g_cl.m_local->m_iHealth() < 1)
-		return;
-
-	const auto pos = g_cl.m_local->GetRenderOrigin();
-	vec2_t tmp;
-
-	if (render::WorldToScreen(pos, tmp))
-	{
-		vec2_t draw_tmp;
-		const vec3_t real_pos(50.f * std::cos(math::deg_to_rad(g_cl.m_real_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_real_angle.y)) + pos.y, pos.z);
-
-		/*	if (render::WorldToScreen(real_pos, draw_tmp))
-			{
-				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 });
-				render::hud.string(draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 }, "real angle", render::ALIGN_LEFT);
-			}*
-
-		if (g_menu.main.antiaim.enable.get())
+		if (render::WorldToScreen(g_shots.iPlayermins, g_shots.iPlayerbottom) && render::WorldToScreen(g_shots.iPlayermaxs, g_shots.iPlayertop))
 		{
-			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_angle.y)) + pos.y, pos.z);
+			// get the esp box info >_<
+			Rect box;
+			box.h = g_shots.iPlayerbottom.y - g_shots.iPlayertop.y;
+			box.w = box.h / 2.f;
+			box.x = g_shots.iPlayerbottom.x - (box.w / 2.f);
+			box.y = g_shots.iPlayerbottom.y - box.h;
 
-			if (render::WorldToScreen(fake_pos, draw_tmp))
-			{
-				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 });
-				render::hud.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "lby angle", render::ALIGN_LEFT);
-			}
-		}
-
-		if (g_menu.main.antiaim.fake_yaw.get() == 2)
-		{
-			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(g_cl.m_lby_angles.y)) + pos.x,
-				50.f * sin(math::deg_to_rad(g_cl.m_lby_angles.y)) + pos.y, pos.z);
-
-			/*if (render::WorldToScreen(lby_pos, draw_tmp))
-			{
-				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 });
-				render::hud.string(draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 }, "lby angle", render::ALIGN_LEFT);
-			}*
+			// text damage
+			if (!g_shots.iHeadshot)
+				render::hud.string(box.x + box.w / 2, box.y - render::esp.m_size.m_height - 10, { 255, 255, 255, alpha }, "-" + out, render::ALIGN_CENTER);
 		}
 	}
-}*/
-
+}
 
 void Visuals::NoSmoke() {
-	if (!g_menu.main.visuals.nosmoke.get())
+	if (!g_menu.main.visuals.removals.get(1))
 		return;
 	//colado https://www.unknowncheats.me/forum/counterstrike-global-offensive/262635-epic-wireframe-smoke.html
 	std::vector<const char*> vistasmoke_mats =
@@ -316,7 +295,8 @@ void Visuals::NoSmoke() {
 	for (auto mat_s : vistasmoke_mats)
 	{
 		IMaterial* mat = g_csgo.m_material_system->FindMaterial(mat_s, XOR("Other textures"));
-		mat->SetFlag(MATERIAL_VAR_WIREFRAME, true);
+		//mat->SetFlag(MATERIAL_VAR_WIREFRAME, true);
+		mat->SetFlag(MATERIAL_VAR_NO_DRAW, true);
 	}
 }
 
@@ -325,7 +305,7 @@ void Visuals::think() {
 	if (!g_cl.m_local)
 		return;
 
-	if (g_menu.main.visuals.noscope.get()
+	if (g_menu.main.visuals.removals.get(4)
 		&& g_cl.m_local->alive()
 		&& g_cl.m_local->GetActiveWeapon()
 		&& g_cl.m_local->GetActiveWeapon()->GetWpnData()->m_weapon_type == CSWeaponType::WEAPONTYPE_SNIPER_RIFLE
@@ -371,7 +351,7 @@ void Visuals::Spectators() {
 	if (!g_menu.main.visuals.spectators.get())
 		return;
 
-	std::vector< std::string > spectators{ XOR(" ") };
+	std::vector< std::string > spectators{ };
 	int h = render::menu_shade.m_size.m_height;
 
 	for (int i{ 1 }; i <= g_csgo.m_globals->m_max_clients; ++i) {
@@ -405,23 +385,35 @@ void Visuals::Spectators() {
 
 		//watermark comment POG
 		if (g_menu.main.misc.watermark.get()) {
-			render::menu_shade.string(g_cl.m_width - 10, 22 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+			render::menu_shade.string(g_cl.m_width - 10, 26 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
 		}
 		else {
-			render::menu_shade.string(g_cl.m_width - 10, 8 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+			render::menu_shade.string(g_cl.m_width - 10, 8 + (i * (h + 3)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
 		}
-		
-
-		//render::menu_shade.string(g_cl.m_width - 20, (g_cl.m_height / 2) - (total_size / 2) + (i * (h - 1)),
-			//{ 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
 	}
 }
-
 
 void Visuals::StatusIndicators() {
 	// dont do if dead.
 	if (!g_cl.m_processing)
 		return;
+
+	static float next_lby_update2[65];
+	auto local_player2 = g_cl.m_local;
+	float time_remain_to_update2 = next_lby_update2[local_player2->index()] - local_player2->m_flSimulationTime();
+	float time_update2 = next_lby_update2[local_player2->index()];
+
+
+	float fill2 = 0;
+	fill2 = (((time_remain_to_update2)));
+	static float add2 = 0.000f;
+	add2 = 1.125f - fill2;
+
+	//auto nci = g_csgo.m_engine->GetNetChannelInfo();
+
+	//auto local_player = g_cl.m_local;
+
+	//std::string outgoing = std::to_string(nci->GetLatency(0) * 1000);
 
 	struct Indicator_t { Color color; std::string text; };
 	std::vector< Indicator_t > indicators{ };
@@ -455,17 +447,17 @@ void Visuals::StatusIndicators() {
 		indicators.push_back(ind);
 	}
 
-	if (g_menu.main.visuals.indicators.get()) {
+	if (g_menu.main.visuals.indicators.get() && g_aimbot.m_baim_toggle) {
 		Indicator_t ind{};
-		ind.color = g_aimbot.m_baim_toggle ? 0xff15c27b : 0xff0000ff;
+		ind.color = 0xff15c27b;
 		ind.text = XOR("BAIM");
 
 		indicators.push_back(ind);
 	}
 
-	if (g_menu.main.visuals.indicators.get()) {
+	if (g_menu.main.visuals.indicators.get() && g_aimbot.m_damage_toggle) {
 		Indicator_t ind{};
-		ind.color = g_aimbot.m_damage_toggle ? 0xff15c27b : 0xff0000ff;
+		ind.color = 0xff15c27b;
 		ind.text = XOR("DMG");
 
 		indicators.push_back(ind);
@@ -478,7 +470,9 @@ void Visuals::StatusIndicators() {
 	for (size_t i{ }; i < indicators.size(); ++i) {
 		auto& indicator = indicators[i];
 
-		render::indicator.string(12, g_cl.m_height - 75 - (30 * i), indicator.color, indicator.text);
+		render::indicator.string(12, g_cl.m_height - 426 - (30 * i), indicator.color, indicator.text);
+		//render::indicator.string(12, g_cl.m_height - 426 - (30 * i), Color{ 10, 10, 10, 125 }, "LBY");
+		//render::indicator.string(12, g_cl.m_height - 426 - (30 * 1), indicator.color, std::to_string(ping) + "ms");
 	}
 
 	auto local_player = g_cl.m_local;
@@ -522,62 +516,24 @@ void Visuals::StatusIndicators() {
 
 	float change1337 = std::abs(math::NormalizedAngle(g_cl.m_body - g_cl.m_angle.y));
 
-	Color color1337 = {  };
+	Color color1337 = { 255,0,0,255 };
 
 	if (change1337 > 35.f) {
 		color1337 = { 124,195,13,255 }; // green color
 	}
 
-	//render::rect_filled(13, g_cl.m_height - 74 + 26, 48, 4, { 10, 10, 10, 125 });
-	//render::rect_filled(13, g_cl.m_height - 74 + 26, add * 40, 2, color1337);
+	//render::rect_filled(13, g_cl.m_height - 423 + 26, 48, 4, { 10, 10, 10, 125 });
+	//render::rect_filled(13, g_cl.m_height - 423 + 26, add * 40, 2, color1337);
 	//render::arccircle(12 + 60, g_cl.m_height - 74 + 23 - 9, 5, 9, 0, 360, { 0,0,0,50 });
 	//render::arccircle(12 + 60, g_cl.m_height - 74 + 23 - 9, 6, 8, 0, 340 * add, color1337);
 	//render::drawCircle(90, 87, 100, { 255,255,255,255 });
 	if (!((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND)) && g_menu.main.visuals.indicators.get()) {
-		render::draw_arc(12 + 60, g_cl.m_height - 74 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
-		render::draw_arc(12 + 60, g_cl.m_height - 74 + 23 - 9, 7, 0, 340 * add, 3, color1337);
+		render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
+		render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 7, 0, 340 * add, 3, color1337);
 	}
 	/*std::string add1 = tfm::format(XOR("%i"), add);
 	render::esp_small.string(500, 500, color1337, add1, render::ALIGN_CENTER);*/
 }
-
-/*void Visuals::SpreadCrosshair() {
-	// dont do if dead.
-	if (!g_cl.m_processing)
-		return;
-
-	if (!g_menu.main.visuals.spread_xhair.get())
-		return;
-
-	// get active weapon.
-	Weapon* weapon = g_cl.m_local->GetActiveWeapon();
-	if (!weapon)
-		return;
-
-	WeaponInfo* data = weapon->GetWpnData();
-	if (!data)
-		return;
-
-	// do not do this on: bomb, knife and nades.
-	int type = weapon->m_iItemDefinitionIndex();
-	if (type == WEAPONTYPE_KNIFE || type == WEAPONTYPE_C4 || type == WEAPONTYPE_GRENADE)
-		return;
-
-	// calc radius.
-	float radius = ((weapon->GetInaccuracy() + weapon->GetSpread()) * 320.f) / (std::tan(math::deg_to_rad(g_cl.m_local->GetFOV()) * 0.5f) + FLT_EPSILON);
-
-	// scale by screen size.
-	radius *= g_cl.m_height * (1.f / 480.f);
-
-	// get color.
-	Color col = g_menu.main.visuals.spread_xhair_col.get();
-
-	// modify alpha channel.
-	col.a() = 200 * (g_menu.main.visuals.spread_xhair_blend.get() / 100.f);
-
-	int segements = std::max(16, (int)std::round(radius * 0.75f));
-	render::circle(g_cl.m_width / 2, g_cl.m_height / 2, radius, segements, col);
-}*/
 
 void Visuals::SpreadCrosshair() {
 	// dont do if dead.
@@ -704,6 +660,29 @@ void Visuals::DrawProjectile(Weapon* ent) {
 	Color col = g_menu.main.visuals.proj_color.get();
 	col.a() = 0xb4;
 
+	if (ent->is(HASH("CHostage"))) {
+		std::string distance;
+		int dist = (((ent->m_vecOrigin() - g_cl.m_local->m_vecOrigin()).length_sqr()) * 0.0625) * 0.001;
+		//if (dist > 0)
+		//distance = tfm::format(XOR("%i FT"), dist);
+		if (dist > 0) {
+			if (dist > 5) {
+				while (!(dist % 5 == 0)) {
+					dist = dist - 1;
+				}
+
+				if (dist % 5 == 0)
+					distance = tfm::format(XOR("%i FT"), dist);
+			}
+			else
+				distance = tfm::format(XOR("%i FT"), dist);
+		}
+		if (dist < 150) {
+			render::esp_small.string(screen.x, screen.y, colors::light_blue, XOR("HOSTAGE"), render::ALIGN_CENTER);
+			render::esp_small.string(screen.x, screen.y - 7, colors::light_blue, distance, render::ALIGN_CENTER);
+		}
+	}
+
 	// draw decoy.
 	if (ent->is(HASH("CDecoyProjectile")))
 		render::esp_small.string(screen.x, screen.y, col, XOR("DECOY"), render::ALIGN_CENTER);
@@ -725,8 +704,7 @@ void Visuals::DrawProjectile(Weapon* ent) {
 			else if (name.find(XOR("fraggrenade")) != std::string::npos) {
 
 				// grenade range.
-				if (g_menu.main.visuals.proj_range.get(0))
-					render::sphere(origin, 10.f, 5.f, 1.f, g_menu.main.visuals.proj_range_color.get());
+					//render::sphere( origin, 350.f, 5.f, 1.f, g_menu.main.visuals.proj_range_color.get( ) );
 
 				render::esp_small.string(screen.x, screen.y, col, XOR("FRAG"), render::ALIGN_CENTER);
 			}
@@ -735,17 +713,13 @@ void Visuals::DrawProjectile(Weapon* ent) {
 
 	// find classes.
 	else if (ent->is(HASH("CInferno"))) {
-		// fire range.
-		if (g_menu.main.visuals.proj_range.get(1))
-			render::sphere(origin, 160.f, 5.f, 1.f, g_menu.main.visuals.proj_range_color.get());
-
 		render::esp_small.string(screen.x, screen.y, col, XOR("FIRE"), render::ALIGN_CENTER);
 	}
 
-	else if (ent->is(HASH("CSmokeGrenadeProjectile")))
+	else if (ent->is(HASH("CSmokeGrenadeProjectile"))) {
 		render::esp_small.string(screen.x, screen.y, col, XOR("SMOKE"), render::ALIGN_CENTER);
+	}
 }
-
 
 void Visuals::DrawItem(Weapon* item) {
 	// we only want to draw shit without owner.
@@ -1037,7 +1011,7 @@ void Visuals::DrawPlayer(Player* player) {
 	int low_alpha = (int)(179.f * opacity);
 
 	// get color based on enemy or not.
-	color = enemy ? g_menu.main.players.box_enemy.get() : g_menu.main.players.box_friendly.get();
+	color = g_menu.main.players.box_enemy.get();
 
 	if (dormant && dormant_esp) {
 		alpha = 112;
@@ -1075,19 +1049,19 @@ void Visuals::DrawPlayer(Player* player) {
 
 	// DebugAimbotPoints( player );
 
-	bool bone_esp = (enemy && g_menu.main.players.skeleton.get(0)) || (!enemy && g_menu.main.players.skeleton.get(1));
+	bool bone_esp = (enemy && g_menu.main.players.skeleton.get());
 	if (bone_esp)
 		DrawSkeleton(player, alpha);
 
 	// is box esp enabled for this player.
-	bool box_esp = (enemy && g_menu.main.players.box.get(0)) || (!enemy && g_menu.main.players.box.get(1));
+	bool box_esp = (enemy && g_menu.main.players.box.get());
 
 	// render box if specified.
 	if (box_esp)
 		render::rect_outlined(box.x, box.y, box.w, box.h, color, { 10, 10, 10, low_alpha });
 
 	// is name esp enabled for this player.
-	bool name_esp = (enemy && g_menu.main.players.name.get(0)) || (!enemy && g_menu.main.players.name.get(1));
+	bool name_esp = (enemy && g_menu.main.players.name.get());
 
 	// draw name.
 	if (name_esp) {
@@ -1108,7 +1082,7 @@ void Visuals::DrawPlayer(Player* player) {
 	}
 
 	// is health esp enabled for this player.
-	bool health_esp = (enemy && g_menu.main.players.health.get(0)) || (!enemy && g_menu.main.players.health.get(1));
+	bool health_esp = (enemy && g_menu.main.players.health.get());
 
 	if (health_esp) {
 		int y = box.y + 1;
@@ -1149,7 +1123,7 @@ void Visuals::DrawPlayer(Player* player) {
 	{
 		std::vector< std::pair< std::string, Color > > flags;
 
-		auto items = enemy ? g_menu.main.players.flags_enemy.GetActiveIndices() : g_menu.main.players.flags_friendly.GetActiveIndices();
+		auto items = g_menu.main.players.flags_enemy.GetActiveIndices();
 		AimPlayer* data = &g_aimbot.m_players[player->index() - 1];
 
 		// NOTE FROM NITRO TO DEX -> stop removing my iterator loops, i do it so i dont have to check the size of the vector
@@ -1157,7 +1131,7 @@ void Visuals::DrawPlayer(Player* player) {
 		for (auto it = items.begin(); it != items.end(); ++it) {
 
 			// money.
-			if (*it == 0)
+			if (*it == 0 && enemy)
 				if (dormant)
 					flags.push_back({ tfm::format(XOR("$%i"), player->m_iAccount()), { 130,130,130, low_alpha } });
 				else
@@ -1166,20 +1140,20 @@ void Visuals::DrawPlayer(Player* player) {
 			// armor.
 			if (*it == 1) {
 				// helmet and kevlar.
-				if (player->m_bHasHelmet() && player->m_ArmorValue() > 0)
+				if (player->m_bHasHelmet() && player->m_ArmorValue() > 0 && enemy)
 					if (dormant)
 						flags.push_back({ XOR("HK"), { 130,130,130, low_alpha } });
 					else
 						flags.push_back({ XOR("HK"), { 255, 255, 255, low_alpha } });
 				// only helmet.
-				else if (player->m_bHasHelmet())
+				else if (player->m_bHasHelmet() && enemy)
 					if (dormant)
 						flags.push_back({ XOR("HK"), { 130,130,130, low_alpha } });
 					else
 						flags.push_back({ XOR("HK"), { 255, 255, 255, low_alpha } });
 
 				// only kevlar.
-				else if (player->m_ArmorValue() > 0)
+				else if (player->m_ArmorValue() > 0 && enemy)
 					if (dormant)
 						flags.push_back({ XOR("K"), { 130,130,130, low_alpha } });
 					else
@@ -1187,21 +1161,21 @@ void Visuals::DrawPlayer(Player* player) {
 			}
 
 			// scoped.
-			if (*it == 2 && player->m_bIsScoped())
+			if (*it == 2 && player->m_bIsScoped() && enemy)
 				if (dormant)
 					flags.push_back({ XOR("ZOOM"), { 130,130,130, low_alpha } });
 				else
 					flags.push_back({ XOR("ZOOM"), { 60, 180, 225, low_alpha } });
 
 			// flashed.
-			if (*it == 3 && player->m_flFlashBangTime() > 0.f)
+			if (*it == 3 && player->m_flFlashBangTime() > 0.f && enemy)
 				if (dormant)
 					flags.push_back({ XOR("BLIND"), { 130,130,130, low_alpha } });
 				else
 					flags.push_back({ XOR("BLIND"), { 60, 180, 225, low_alpha } });
 
 			// reload.
-			if (*it == 4) {
+			if (*it == 4 && enemy) {
 				// get ptr to layer 1.
 				C_AnimationLayer* layer1 = &player->m_AnimOverlay()[1];
 
@@ -1214,7 +1188,7 @@ void Visuals::DrawPlayer(Player* player) {
 			}
 
 			// bomb.
-			if (*it == 5 && player->HasC4())
+			if (*it == 5 && player->HasC4() && enemy)
 				if (dormant)
 					flags.push_back({ XOR("BOMB"), { 130,130,130, low_alpha } });
 				else
@@ -1224,10 +1198,10 @@ void Visuals::DrawPlayer(Player* player) {
 			if (*it == 7 && data && data->m_records.size())
 			{
 				if (dormant)
-					flags.push_back({ XOR("DORMANT"), {130, 130, 130, low_alpha}});
-				else 
+					flags.push_back({ XOR("DORMANT"), {130, 130, 130, low_alpha} });
+				else
 					if (data->m_records.front().get())
-					flags.push_back({ data->m_records.front().get()->m_resolver_mode, {139, 209, 0, low_alpha} });
+						flags.push_back({ data->m_records.front().get()->m_resolver_mode, {139, 209, 0, low_alpha} });
 			}
 		}
 
@@ -1237,7 +1211,7 @@ void Visuals::DrawPlayer(Player* player) {
 			else
 				flags.push_back({ XOR("FAKE"), { 255,255,255, low_alpha } });
 
-			// iterate flags.
+		// iterate flags.
 		for (size_t i{ }; i < flags.size(); ++i) {
 			// get flag job (pair).
 			const auto& f = flags[i];
@@ -1293,7 +1267,7 @@ void Visuals::DrawPlayer(Player* player) {
 			}
 		}
 		// draw weapon.
-		if ((enemy && g_menu.main.players.weapon.get(0)) || (!enemy && g_menu.main.players.weapon.get(1))) {
+		if ((enemy && g_menu.main.players.weapon.get())) {
 			Weapon* weapon = player->GetActiveWeapon();
 			if (weapon) {
 				WeaponInfo* data = weapon->GetWpnData();
@@ -1474,9 +1448,11 @@ void Visuals::DrawPlantedC4() {
 	// finally do all of our rendering.
 	is_visible = render::WorldToScreen(m_planted_c4_explosion_origin, screen_pos);
 
+	std::string bomb = m_last_bombsite.c_str();
+
 	// 'on screen (2D)'.
 	if (mode_2d) {
-		std::string timer1337 = tfm::format(XOR("%s - %.1fs"), m_last_bombsite.c_str(), explode_time_diff);
+		std::string timer1337 = tfm::format(XOR("%s - %.1fs"), bomb.substr(0, 1), explode_time_diff);
 		std::string damage1337 = tfm::format(XOR("%i"), final_damage);
 
 		Color colortimer = { 135, 172, 10, 255 };
@@ -1590,7 +1566,7 @@ void Visuals::DrawHistorySkeleton(Player* player, int opacity, int index) {
 		record->m_bones->get_bone(bone_pos, i);
 		record->m_bones->get_bone(parent_pos, parent);
 
-		Color clr = player->enemy(g_cl.m_local) ? g_menu.main.players.skeleton_enemy.get() : g_menu.main.players.skeleton_friendly.get();
+		Color clr = g_menu.main.players.skeleton_enemy.get();
 		clr.a() = opacity;
 
 		// world to screen both the bone parent bone then draw.
@@ -1640,7 +1616,7 @@ void Visuals::DrawSkeleton(Player* player, int opacity) {
 		matrix->get_bone(bone_pos, i);
 		matrix->get_bone(parent_pos, parent);
 
-		Color clr = player->enemy(g_cl.m_local) ? g_menu.main.players.skeleton_enemy.get() : g_menu.main.players.skeleton_friendly.get();
+		Color clr = g_menu.main.players.skeleton_enemy.get();
 		clr.a() = opacity;
 
 		// world to screen both the bone parent bone then draw.
@@ -1679,19 +1655,14 @@ void Visuals::RenderGlow() {
 
 		bool enemy = player->enemy(g_cl.m_local);
 
-		if (enemy && !g_menu.main.players.glow.get(0))
-			continue;
-
-		if (!enemy && !g_menu.main.players.glow.get(1))
+		if (enemy && !g_menu.main.players.glow.get())
 			continue;
 
 		// enemy color
 		if (enemy)
 			color = g_menu.main.players.glow_enemy.get();
-
-		// friendly color
 		else
-			color = g_menu.main.players.glow_friendly.get();
+			color = Color{ 0, 0, 0, 0 };
 
 		obj->m_render_occluded = true;
 		obj->m_render_unoccluded = false;
@@ -1845,8 +1816,8 @@ void Visuals::DrawBeams() {
 				// note - dex; possible beam models: sprites/physbeam.vmt | sprites/white.vmt
 				beam_info.m_vecStart = start;
 				beam_info.m_vecEnd = end;
-				beam_info.m_nModelIndex = g_csgo.m_model_info->GetModelIndex(XOR("sprites/physbeam.vmt"));
-				beam_info.m_pszModelName = XOR("sprites/physbeam.vmt");
+				beam_info.m_nModelIndex = g_csgo.m_model_info->GetModelIndex(XOR("sprites/purplelaser1.vmt"));
+				beam_info.m_pszModelName = XOR("sprites/purplelaser1.vmt");
 				beam_info.m_flHaloScale = 0.f;
 				beam_info.m_flLife = g_menu.main.visuals.impact_beams_time.get();
 				beam_info.m_flWidth = 2.f;
@@ -1884,25 +1855,6 @@ void Visuals::DrawBeams() {
 			}
 		}
 	}
-}
-
-void ArrowBS()
-{
-	int w, h;
-	g_csgo.m_engine->GetScreenSize(w, h);
-	h / 2;
-	w / 2;
-	bool leftColor = false, rightColor = false;
-
-	if (GetAsyncKeyState(VK_LEFT))
-		leftColor != leftColor;
-
-	render::hud.string(w + 50, h, { 255, 255, 255 }, "<", render::ALIGN_RIGHT);
-
-	if (GetAsyncKeyState(VK_RIGHT))
-		rightColor != rightColor;
-
-	render::hud.string(w + 50, h, { 255, 255, 255 }, ">", render::ALIGN_RIGHT);
 }
 
 void Visuals::DebugAimbotPoints(Player* player) {

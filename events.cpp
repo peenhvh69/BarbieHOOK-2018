@@ -132,7 +132,7 @@ void events::player_hurt(IGameEvent* evt) {
 
 		if (g_menu.main.misc.funny_on_death.get()) {
 			int hp2 = evt->m_keys->FindKey(HASH("health"))->GetInt();
-			if (attacker != g_cl.m_local && victim == g_cl.m_local && hp2 == 0) {
+			if (attacker != g_cl.m_local && victim == g_cl.m_local && hp2 == 0 && g_menu.main.misc.funny_on_death.get()) {
 				switch (rand() % 3) {
 					case 0: PlaySound(fart_wav, NULL, SND_ASYNC | SND_MEMORY); break;
 					case 1: PlaySound(oof_wav, NULL, SND_ASYNC | SND_MEMORY); break;
@@ -153,13 +153,13 @@ void events::player_hurt(IGameEvent* evt) {
 		if (attacker == g_cl.m_local && hp == 0) {
 			switch (rand() % 4) {
 			case 0:
-				g_csgo.m_engine->ExecuteClientCmd("say 1'd by BarbieHOOK");
+				g_csgo.m_engine->ExecuteClientCmd("say 1'd by BarbieHOOK | discord.gg/efFwS76heW");
 				break;
 			case 1:
-				g_csgo.m_engine->ExecuteClientCmd("say get jiggl'd loser");
+				g_csgo.m_engine->ExecuteClientCmd("say get jiggl'd loser | discord.gg/efFwS76heW");
 				break;
 			case 2:
-				g_csgo.m_engine->ExecuteClientCmd("say ez for BarbieHOOK");
+				g_csgo.m_engine->ExecuteClientCmd("say ez for BarbieHOOK | discord.gg/efFwS76heW");
 				break;
 			case 3:
 				g_csgo.m_engine->ExecuteClientCmd("say uff ya$$$ tapped nn dog ez for BarbieHOOK");
@@ -388,6 +388,21 @@ void events::bomb_beep(IGameEvent* evt) {
 	g_visuals.m_planted_c4_radius_scaled = g_visuals.m_planted_c4_radius / 3.f;
 }
 
+void events::bomb_planted(IGameEvent* evt) {
+	Entity* bomb_target;
+	std::string   site_name;
+	int           player_index;
+	player_info_t info;
+	std::string   out;
+
+	// get the func_bomb_target entity and store info about it.
+	bomb_target = g_csgo.m_entlist->GetClientEntity(evt->m_keys->FindKey(HASH("site"))->GetInt());
+	if (bomb_target) {
+		site_name = bomb_target->GetBombsiteName();
+		g_visuals.m_last_bombsite = site_name;
+	}
+}
+
 //void events::bomb_begindefuse(IGameEvent* evt) {
 //	player_info_t info;
 //
@@ -456,7 +471,7 @@ void Listener::init() {
 	//add(XOR("player_given_c4"), events::player_given_c4);
 	//add(XOR("bomb_beginplant"), events::bomb_beginplant);
 	//add(XOR("bomb_abortplant"), events::bomb_abortplant);
-	//add(XOR("bomb_planted"), events::bomb_planted);
+	add(XOR("bomb_planted"), events::bomb_planted);
 	add(XOR("bomb_beep"), events::bomb_beep);
 	/*add(XOR("bomb_begindefuse"), events::bomb_begindefuse);
 	add(XOR("bomb_abortdefuse"), events::bomb_abortdefuse);

@@ -51,13 +51,13 @@ void hud_indicators::Indicators()
 	// line.
 	//GradientLine2(x + 10, m_height / 2 + 10, 200, 2, Color(g, b, r, 255), Color(r, g, b, 255));
 	//GradientLine2(x + 10, m_height / 2 + 10, 200, 2, Color(r, g, b, 255), Color(b, r, g, 255));
-	if (g_menu.main.config.rainbow_menu_type.get() == 0 || !g_menu.main.config.rainbow_menu.get()) {
+	if (g_menu.main.misc.rainbow_menu_type.get() == 0) {
 		render::rect_filled(x + 10, m_height / 2 + 10, 200, 2, g_gui.m_color);
 	}
-	else if (g_menu.main.config.rainbow_menu_type.get() == 1 && g_menu.main.config.rainbow_menu.get()) {
+	else if (g_menu.main.misc.rainbow_menu_type.get() == 1) {
 		render::rect_filled(x + 10, m_height / 2 + 10, 200, 2, Color(r, g, b, 255));
 	}
-	else if (g_menu.main.config.rainbow_menu_type.get() == 2 && g_menu.main.config.rainbow_menu.get()) {
+	else if (g_menu.main.misc.rainbow_menu_type.get() == 2) {
 		render::gradient_line(x + 10, m_height / 2 + 10, 200, 2, Color(g, b, r, 255), Color(r, g, b, 255));
 	}
 
@@ -70,7 +70,7 @@ void hud_indicators::Indicators()
 	render::hud.string(x + 10 + 6, m_height / 2 + 50, { 255, 255, 255, 255 }, "damage override", render::ALIGN_LEFT);
 	render::hud.string(x + 10 + 6, m_height / 2 + 60, { 255, 255, 255, 255 }, "gay-walk", render::ALIGN_LEFT);
 
-	if (g_menu.main.config.rainbow_menu.get()) {
+	if (g_menu.main.misc.rainbow_menu_type.get()) {
 		// condition dt if (g_menu.main.antiaim.desync_mode.get() != 0 || !g_menu.main.antiaim.desync.get())
 		if (!g_aimbot.m_fake_latency)
 			render::hud.string(x + 10 + 195, m_height / 2 + 30, { 255, 0, 0, 255 }, "disabled", render::ALIGN_RIGHT);

@@ -91,8 +91,6 @@ extern bool LoadModel;
 #include "agent_changer.h"
 #include "shots.h"
 #include "fart.h"
-#include "undefeated.h"
-#include "indicators.h"
 
 // gui includes.
 #include "json.h"

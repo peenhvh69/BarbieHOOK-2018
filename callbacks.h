@@ -12,18 +12,29 @@ namespace callbacks {
 	void ConfigLoad3();
 	void ConfigLoad4();
 	void ConfigLoad5();
-	void ConfigLoad6();
 	void ConfigLoad();
 	void HiddenCvar();
 	void ConfigSave();
 	void emporium_connect();
 	void your_dignity_connect();
 	void mrx_connect();
-	bool IsRainbowMenu();
+	bool IsWatermarkOn();
 	bool IsHitmarker();
 	bool ViewFOVOverride();
 	bool IsCustomTexture();
 	bool FOVOverride();
+
+	//visuals
+	bool IsSkeletonOn();
+	bool IsGlowOn();
+	bool IsHistoryOn();
+	bool IsChamsVisible();
+	bool IsChamsInvisible();
+	bool IsChamsVisibleOrInvisible();
+	bool IsBoxOn();
+	bool IsOffscreenOn();
+	bool IsNameOn();
+	bool IsWeaponOn();
 
 	// aimbot
 	bool IsZeusBot();
@@ -114,9 +125,6 @@ namespace callbacks {
 
 	bool IsAgentChanger();
 	bool IsTransparentProps();
-	bool IsSkyBoxChange();
-	bool IsDamageVisible();
-	bool IsDamageInVisible();
 	bool IsCustomLby();
 
 	// weapon cfgs.

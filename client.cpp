@@ -80,13 +80,13 @@ void Client::DrawHUD() {
 	// background.
 	render::rect_filled(m_width - size.m_width - 20, 10, size.m_width + 10, size.m_height + 2, { 12, 12, 12, 255 });
 
-	if (g_menu.main.config.rainbow_menu_type.get() == 0 || !g_menu.main.config.rainbow_menu.get()) {
+	if (g_menu.main.misc.rainbow_menu_type.get() == 0) {
 		render::rect_filled(m_width - size.m_width - 20, 8, size.m_width + 10, 2, g_gui.m_color);
 	}
-	else if (g_menu.main.config.rainbow_menu_type.get() == 1 && g_menu.main.config.rainbow_menu.get()) {
+	else if (g_menu.main.misc.rainbow_menu_type.get() == 1 ) {
 		render::rect_filled(m_width - size.m_width - 20, 8, size.m_width + 10, 2, Color(r, g, b, 255));
 	}
-	else if (g_menu.main.config.rainbow_menu_type.get() == 2 && g_menu.main.config.rainbow_menu.get()) {
+	else if (g_menu.main.misc.rainbow_menu_type.get() == 2) {
 		render::gradient_line(m_width - size.m_width - 20, 8, size.m_width + 10, 2, Color(g, b, r, 255), Color(r, g, b, 255));
 	}
 
@@ -184,114 +184,6 @@ void Client::ClanTag()
 	}
 }
 
-void Client::Skybox()
-{
-	static auto sv_skyname = g_csgo.m_cvar->FindVar(HASH("sv_skyname"));
-	if (g_menu.main.misc.skyboxchange.get()) {
-		switch (g_menu.main.misc.skybox.get()) {
-		case 0: //Tibet
-			//sv_skyname->SetValue("cs_tibet");
-			sv_skyname->SetValue(XOR("cs_tibet"));
-			break;
-		case 1: //Embassy
-			//sv_skyname->SetValue("embassy");
-			sv_skyname->SetValue(XOR("embassy"));
-			break;
-		case 2: //Italy
-			//sv_skyname->SetValue("italy");
-			sv_skyname->SetValue(XOR("italy"));
-			break;
-		case 3: //Daylight 1
-			//sv_skyname->SetValue("sky_cs15_daylight01_hdr");
-			sv_skyname->SetValue(XOR("sky_cs15_daylight01_hdr"));
-			break;
-		case 4: //Cloudy
-			//sv_skyname->SetValue("sky_csgo_cloudy01");
-			sv_skyname->SetValue(XOR("sky_csgo_cloudy01"));
-			break;
-		case 5: //Night 1
-			sv_skyname->SetValue(XOR("sky_csgo_night02"));
-			break;
-		case 6: //Night 2
-			//sv_skyname->SetValue("sky_csgo_night02b");
-			sv_skyname->SetValue(XOR("sky_csgo_night02b"));
-			break;
-		case 7: //Night Flat
-			//sv_skyname->SetValue("sky_csgo_night_flat");
-			sv_skyname->SetValue(XOR("sky_csgo_night_flat"));
-			break;
-		case 8: //Day HD
-			//sv_skyname->SetValue("sky_day02_05_hdr");
-			sv_skyname->SetValue(XOR("sky_day02_05_hdr"));
-			break;
-		case 9: //Day
-			//sv_skyname->SetValue("sky_day02_05");
-			sv_skyname->SetValue(XOR("sky_day02_05"));
-			break;
-		case 10: //Rural
-			//sv_skyname->SetValue("sky_l4d_rural02_ldr");
-			sv_skyname->SetValue(XOR("sky_l4d_rural02_ldr"));
-			break;
-		case 11: //Vertigo HD
-			//sv_skyname->SetValue("vertigo_hdr");
-			sv_skyname->SetValue(XOR("vertigo_hdr"));
-			break;
-		case 12: //Vertigo Blue HD
-			//sv_skyname->SetValue("vertigoblue_hdr");
-			sv_skyname->SetValue(XOR("vertigoblue_hdr"));
-			break;
-		case 13: //Vertigo
-			//sv_skyname->SetValue("vertigo");
-			sv_skyname->SetValue(XOR("vertigo"));
-			break;
-		case 14: //Vietnam
-			//sv_skyname->SetValue("vietnam");
-			sv_skyname->SetValue(XOR("vietnam"));
-			break;
-		case 15: //Dusty Sky
-			//sv_skyname->SetValue("sky_dust");
-			sv_skyname->SetValue(XOR("sky_dust"));
-			break;
-		case 16: //Jungle
-			sv_skyname->SetValue(XOR("jungle"));
-			break;
-		case 17: //Nuke
-			sv_skyname->SetValue(XOR("nukeblank"));
-			break;
-		case 18: //Office
-			sv_skyname->SetValue(XOR("office"));
-			//game::SetSkybox(XOR("office"));
-			break;
-		default:
-			break;
-		}
-	}
-
-	/*
-	Checkbox	FogOverride; // butt
-	Colorpicker	FogColor; // color
-	Slider		FogStart; // slider
-	Slider		FogEnd; // slider
-	Slider		Fogdensity; // slider
-	*/
-	//g_menu.main.visuals.FogColor.get().r(), g_menu.main.visuals.FogColor.get().g(), g_menu.main.visuals.FogColor.get().b()
-
-	float destiny = g_menu.main.visuals.Fogdensity.get() / 100.f;
-
-	static const auto fog_enable = g_csgo.m_cvar->FindVar(HASH("fog_enable"));
-	fog_enable->SetValue(1); //Включает туман на карте если он выключен по дефолту
-	static const auto fog_override = g_csgo.m_cvar->FindVar(HASH("fog_override"));
-	fog_override->SetValue(g_menu.main.visuals.FogOverride.get()); // Разрешает кастомизацию тумана
-	static const auto fog_color = g_csgo.m_cvar->FindVar(HASH("fog_color"));
-	fog_color->SetValue(std::string(std::to_string(g_menu.main.visuals.FogColor.get().r()) + " " + std::to_string(g_menu.main.visuals.FogColor.get().g()) + " " + std::to_string(g_menu.main.visuals.FogColor.get().b())).c_str()); //Цвет тумана rgb
-	static const auto fog_start = g_csgo.m_cvar->FindVar(HASH("fog_start"));
-	fog_start->SetValue(g_menu.main.visuals.FogStart.get()); // Дистанция с которой туман появляется
-	static const auto fog_end = g_csgo.m_cvar->FindVar(HASH("fog_end"));
-	fog_end->SetValue(g_menu.main.visuals.FogEnd.get()); // Дистанция с которой туман пропадает
-	static const auto fog_destiny = g_csgo.m_cvar->FindVar(HASH("fog_maxdensity"));
-	fog_destiny->SetValue(destiny); //Максимальная насыщенность тумана(0-1)
-}
-
 void Client::KillFeed() {
 	if (!g_menu.main.misc.killfeed.get())
 		return;
@@ -325,7 +217,6 @@ void Client::OnPaint() {
 	g_visuals.think();
 	g_grenades.paint();
 	g_notify.think();
-	g_indicators.Indicators();
 	g_visuals.IndicateAngles();
 
 	DrawHUD();
@@ -789,7 +680,7 @@ void Client::print(const std::string text, ...) {
 	r = round(r * 255), g = round(g * 255), b = round(b * 255);
 
 	// print to console.
-	g_csgo.m_cvar->ConsoleColorPrintf(Color(r, g, b, 255), XOR("[BarbieHOOK] "));
+	g_csgo.m_cvar->ConsoleColorPrintf(g_gui.m_color, XOR("[BarbieHOOK] "));
 	g_csgo.m_cvar->ConsoleColorPrintf(colors::white, buf.c_str());
 }
 

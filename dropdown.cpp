@@ -36,31 +36,6 @@ void Dropdown::draw() {
 	Color color = g_gui.m_color;
 	color.a() = m_parent->m_alpha;
 
-	static unsigned int s, v, i;
-	static float h, r, g, b, f, aa, q, t;
-
-	h = g_csgo.m_globals->m_realtime * 0.1f;
-	s = 1;
-	v = 1;
-
-	i = floor(h * 6);
-	f = h * 6 - i;
-	aa = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-
-	switch (i % 6)
-	{
-	case 0: r = v, g = t, b = aa; break;
-	case 1: r = q, g = v, b = aa; break;
-	case 2: r = aa, g = v, b = t; break;
-	case 3: r = aa, g = q, b = v; break;
-	case 4: r = t, g = aa, b = v; break;
-	case 5: r = v, g = aa, b = q; break;
-	}
-
-	r = round(r * 255), g = round(g * 255), b = round(b * 255);
-
 	// draw label.
 	if (m_use_label)
 		render::menu_shade.string(p.x + LABEL_OFFSET, p.y - 2, { 205, 205, 205, m_parent->m_alpha }, m_label);
@@ -95,19 +70,10 @@ void Dropdown::draw() {
 				// has this item been animated yet?
 				if (m_anim_height > item_offset) {
 
-					if (g_menu.main.config.rainbow_menu.get()) {
-						render::menu.string(p.x + DROPDOWN_X_OFFSET + DROPDOWN_ITEM_X_OFFSET, p.y + m_offset + DROPDOWN_BOX_HEIGHT + DROPDOWN_ITEM_Y_OFFSET + item_offset,
-							(i == m_active_item) ? Color(r, g, b, 255) : Color{ 152, 152, 152, m_parent->m_alpha },
-							m_items[i]);
-					}
-					else {
 					// yet again, it won't use list init inside the ternary conditional.
 					render::menu.string(p.x + DROPDOWN_X_OFFSET + DROPDOWN_ITEM_X_OFFSET, p.y + m_offset + DROPDOWN_BOX_HEIGHT + DROPDOWN_ITEM_Y_OFFSET + item_offset,
 						(i == m_active_item) ? color : Color{ 152, 152, 152, m_parent->m_alpha },
 						m_items[i]);
-					}
-
-
 				}
 			}
 		}

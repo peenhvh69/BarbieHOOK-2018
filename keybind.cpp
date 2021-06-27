@@ -36,31 +36,6 @@ void Keybind::draw() {
 	Color color = g_gui.m_color;
 	color.a() = m_parent->m_alpha;
 
-	static unsigned int s, v, i;
-	static float h, r, g, b, f, aa, q, t;
-
-	h = g_csgo.m_globals->m_realtime * 0.1f;
-	s = 1;
-	v = 1;
-
-	i = floor(h * 6);
-	f = h * 6 - i;
-	aa = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-
-	switch (i % 6)
-	{
-	case 0: r = v, g = t, b = aa; break;
-	case 1: r = q, g = v, b = aa; break;
-	case 2: r = aa, g = v, b = t; break;
-	case 3: r = aa, g = q, b = v; break;
-	case 4: r = t, g = aa, b = v; break;
-	case 5: r = v, g = aa, b = q; break;
-	}
-
-	r = round(r * 255), g = round(g * 255), b = round(b * 255);
-
 	// draw label.
 	render::menu.string(p.x + KEYBIND_X_OFFSET, p.y - 2, { 205, 205, 205, m_parent->m_alpha }, m_label);
 
@@ -72,16 +47,8 @@ void Keybind::draw() {
 	render::rect_filled(p.x + KEYBIND_X_OFFSET + 1, p.y + 15 + 1, m_w - KEYBIND_X_OFFSET - 2, KEYBIND_BOX_HEIGHT - 2, { 41, 41, 41, m_parent->m_alpha });
 
 	// todo; animate with '...'
-	if (m_set) {
-		if (g_menu.main.config.rainbow_menu.get()) {
-			render::menu.string(p.x + KEYBIND_X_OFFSET + KEYBIND_ITEM_X_OFFSET, p.y + 15 + 4, Color(r, g, b, 255), XOR("press key"));
-		}
-		else {
-			render::menu.string(p.x + KEYBIND_X_OFFSET + KEYBIND_ITEM_X_OFFSET, p.y + 15 + 4, color, XOR("press key"));
-		}
-	}
-
-		
+	if (m_set)
+		render::menu.string(p.x + KEYBIND_X_OFFSET + KEYBIND_ITEM_X_OFFSET, p.y + 15 + 4, color, XOR("press key"));
 
 	// we have a key assigned.
 	else if (m_key >= 0 && m_key <= 0xFE)

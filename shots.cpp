@@ -173,7 +173,7 @@ void Shots::OnImpact(IGameEvent* evt) {
 
 	// we did not hit jackshit, or someone else.
 	if (!trace.m_entity || !trace.m_entity->IsPlayer() || trace.m_entity != target)
-		g_notify.add(XOR("missed shot due to spread [angle hit: ") + balls + " ]\n", colors::red);
+		g_notify.add(XOR("missed shot due to spread\n"), g_gui.m_color);
 
 	// we should have 100% hit this player..
 	// this is a miss due to wrong angles.
@@ -183,27 +183,27 @@ void Shots::OnImpact(IGameEvent* evt) {
 		// if we miss a shot on body update.
 		// we can chose to stop shooting at them.
 		if (mode == Resolver::Modes::RESOLVE_BODY) {
-			++data->m_body_index;
+			--data->m_body_index;
 		}
 
 		else if (mode == Resolver::Modes::RESOLVE_LASTMOVE) {
-			++data->m_last_move;
+			--data->m_last_move;
 		}
 
 		else if (mode == Resolver::Modes::RESOLVE_UNKNOWM) {
-			++data->m_unknown_move;
+			--data->m_unknown_move;
 		}
 
 		else if (mode == Resolver::Modes::RESOLVE_STAND) {
-			++data->m_stand_index;
+			--data->m_stand_index;
 		}
 
 		else if (mode == Resolver::Modes::RESOLVE_STAND2) {
-			++data->m_stand_index2;
+			--data->m_stand_index2;
 		}
 
 		else if (mode == Resolver::Modes::RESOLVE_BODY) {
-			++data->m_body_index;
+			--data->m_body_index;
 		}
 
 		++data->m_missed_shots;
@@ -266,6 +266,21 @@ void Shots::OnHurt(IGameEvent* evt) {
 		g_visuals.m_hit_duration = 1.f;
 		g_visuals.m_hit_start = g_csgo.m_globals->m_curtime;
 		g_visuals.m_hit_end = g_visuals.m_hit_start + g_visuals.m_hit_duration;
+
+		// bind to draw
+		iHitDmg = damage;
+
+		// get interpolated origin.
+		iPlayerOrigin = target->GetAbsOrigin();
+
+		// get hitbox bounds.
+		// hehe boy
+		target->ComputeHitboxSurroundingBox(&iPlayermins, &iPlayermaxs);
+
+		// correct x and y coordinates.
+		iPlayermins = { iPlayerOrigin.x, iPlayerOrigin.y, iPlayermins.z };
+		iPlayermaxs = { iPlayerOrigin.x, iPlayerOrigin.y, iPlayermaxs.z + 8.f };
+
 		/*
 		if (group != HITGROUP_HEAD) {
 			g_csgo.m_sound->EmitAmbientSound(XOR("buttons/arena_switch_press_02.wav"), 1.f);
@@ -285,6 +300,9 @@ void Shots::OnHurt(IGameEvent* evt) {
 		}
 		else if (g_menu.main.misc.hitmarker_dropdown.get() == 2) {
 			PlaySound(bubble, NULL, SND_ASYNC | SND_MEMORY);
+		}
+		else if (g_menu.main.misc.hitmarker_dropdown.get() == 3) {
+			PlaySound(bonk, NULL, SND_ASYNC | SND_MEMORY);
 		}
 	}
 

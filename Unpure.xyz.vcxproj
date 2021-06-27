@@ -243,7 +243,6 @@
     <ClInclude Include="hud.h" />
     <ClInclude Include="hvh.h" />
     <ClInclude Include="includes.h" />
-    <ClInclude Include="indicators.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="interfaces.h" />
     <ClInclude Include="json.h" />
@@ -312,7 +311,6 @@
     <ClCompile Include="edit.cpp" />
     <ClCompile Include="events.cpp" />
     <ClCompile Include="firebullets.cpp" />
-    <ClCompile Include="indicators.cpp" />
     <ClCompile Include="keybind.cpp" />
     <ClCompile Include="matchframework.cpp" />
     <ClCompile Include="materialsystem.cpp" />

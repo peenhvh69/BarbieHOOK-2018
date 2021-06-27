@@ -43,40 +43,34 @@ void callbacks::SaveHotkeys() {
 }
 
 void callbacks::ConfigLoad1() {
-	g_config.load(&g_menu.main, XOR("1.cfg"));
+	g_config.load(&g_menu.main, XOR("Default.cfg"));
 	g_menu.main.config.config.select(1 - 1);
 
-	g_cl.print(tfm::format(XOR("loaded config 1\n")));
+	g_cl.print(tfm::format(XOR("loaded Default.cfg\n")));
 }
 
 void callbacks::ConfigLoad2() {
-	g_config.load(&g_menu.main, XOR("2.cfg"));
+	g_config.load(&g_menu.main, XOR("HVH.cfg"));
 	g_menu.main.config.config.select(2 - 1);
-	g_cl.print(tfm::format(XOR("loaded config 2\n")));
+	g_cl.print(tfm::format(XOR("loaded HVH.cfg\n")));
 }
 
 void callbacks::ConfigLoad3() {
-	g_config.load(&g_menu.main, XOR("3.cfg"));
+	g_config.load(&g_menu.main, XOR("Extra #1.cfg"));
 	g_menu.main.config.config.select(3 - 1);
-	g_cl.print(tfm::format(XOR("loaded config 3\n")));
+	g_cl.print(tfm::format(XOR("loaded Extra #1.cfg\n")));
 }
 
 void callbacks::ConfigLoad4() {
-	g_config.load(&g_menu.main, XOR("4.cfg"));
+	g_config.load(&g_menu.main, XOR("Extra #2.cfg"));
 	g_menu.main.config.config.select(4 - 1);
-	g_cl.print(tfm::format(XOR("loaded config 4\n")));
+	g_cl.print(tfm::format(XOR("loaded Extra #2.cfg\n")));
 }
 
 void callbacks::ConfigLoad5() {
-	g_config.load(&g_menu.main, XOR("5.cfg"));
+	g_config.load(&g_menu.main, XOR("Extra #3.cfg"));
 	g_menu.main.config.config.select(5 - 1);
-	g_cl.print(tfm::format(XOR("loaded config 5\n")));
-}
-
-void callbacks::ConfigLoad6() {
-	g_config.load(&g_menu.main, XOR("6.cfg"));
-	g_menu.main.config.config.select(6 - 1);
-	g_cl.print(tfm::format(XOR("loaded config 6\n")));
+	g_cl.print(tfm::format(XOR("loaded Extra #3.cfg\n")));
 }
 
 void callbacks::ConfigLoad() {
@@ -112,12 +106,40 @@ void callbacks::HiddenCvar() {
 }
 
 bool callbacks::IsCustomTexture() {
-	return g_menu.main.visuals.chams_custom_texture.get();
+	return g_menu.main.players.chams_custom_texture.get();
+}
+
+bool callbacks::IsSkeletonOn() {
+	return g_menu.main.players.skeleton.get();
+}
+
+bool callbacks::IsGlowOn() {
+	return g_menu.main.players.glow.get();
+}
+
+bool callbacks::IsHistoryOn() {
+	return g_menu.main.players.chams_enemy_history.get();
+}
+
+bool callbacks::IsBoxOn() {
+	return g_menu.main.players.box.get();
+}
+
+bool callbacks::IsOffscreenOn() {
+	return g_menu.main.players.offscreen.get();
+}
+
+bool callbacks::IsNameOn() {
+	return g_menu.main.players.name.get();
+}
+
+bool callbacks::IsWeaponOn() {
+	return g_menu.main.players.weapon.get();
 }
 
 // menu elements
-bool callbacks::IsRainbowMenu() {
-	return g_menu.main.config.rainbow_menu.get();
+bool callbacks::IsWatermarkOn() {
+	return g_menu.main.misc.watermark.get();
 }
 
 bool callbacks::IsZeusBot() {
@@ -126,6 +148,18 @@ bool callbacks::IsZeusBot() {
 
 bool callbacks::IsHitmarker() {
 	return g_menu.main.misc.hitmarker.get();
+}
+
+bool callbacks::IsChamsVisible() {
+	return g_menu.main.players.chams_enemy.get(0);
+}
+
+bool callbacks::IsChamsInvisible() {
+	return g_menu.main.players.chams_enemy.get(1);
+}
+
+bool callbacks::IsChamsVisibleOrInvisible() {
+	return g_menu.main.players.chams_enemy.get(0) || g_menu.main.players.chams_enemy.get(1);
 }
 
 // general
@@ -392,10 +426,6 @@ bool callbacks::IsTransparentProps() {
 
 bool callbacks::IsNightMode() {
 	return g_menu.main.visuals.world.get() == 1;
-}
-
-bool callbacks::IsSkyBoxChange() {
-	return g_menu.main.misc.skyboxchange.get();
 }
 
 bool callbacks::IsCustomLby() {
@@ -761,7 +791,7 @@ bool callbacks::AUTO_STOP() {
 }
 
 bool callbacks::IsFakeChams() {
-	return g_menu.main.visuals.chams_fake.get();
+	return g_menu.main.players.chams_fake.get();
 }
 
 bool callbacks::IsLocalChams() {

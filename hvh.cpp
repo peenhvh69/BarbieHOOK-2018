@@ -15,23 +15,23 @@ void HVH::AntiAimPitch() {
 	bool safe = g_menu.main.config.mode.get() == 0;
 
 	switch (m_pitch) {
-		case 1:
-			// down.
-			g_cl.m_cmd->m_view_angles.x = safe ? 89.f : 720.f;
-			break;
-		case 2:
-			// up.
-			g_cl.m_cmd->m_view_angles.x = safe ? -89.f : -720.f;
-			break;
-		case 3:
-			// random.
-			g_cl.m_cmd->m_view_angles.x = g_csgo.RandomFloat(safe ? -89.f : -720.f, safe ? 89.f : 720.f);
-			break;
-		case 4:
-			IdealPitch();
-			break;
-		default:
-			break;
+	case 1:
+		// down.
+		g_cl.m_cmd->m_view_angles.x = safe ? 89.f : 720.f;
+		break;
+	case 2:
+		// up.
+		g_cl.m_cmd->m_view_angles.x = safe ? -89.f : -720.f;
+		break;
+	case 3:
+		// random.
+		g_cl.m_cmd->m_view_angles.x = g_csgo.RandomFloat(safe ? -89.f : -720.f, safe ? 89.f : 720.f);
+		break;
+	case 4:
+		IdealPitch();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -84,8 +84,9 @@ void HVH::AutoDirection() {
 	// construct vector of angles to test.
 	std::vector< AdaptiveAngle > angles{ };
 	angles.emplace_back(m_view - 180.f);
-	angles.emplace_back(m_view + 90.f);
-	angles.emplace_back(m_view - 90.f);
+	//angles.emplace_back(m_auto);
+	angles.emplace_back(m_auto + 90.f);
+	angles.emplace_back(m_auto - 90.f);
 
 	// start the trace at the enemy shoot pos.
 	vec3_t start = target.player->GetShootPosition();
@@ -157,8 +158,8 @@ void HVH::AutoDirection() {
 	// put the most distance at the front of the container.
 	std::sort(angles.begin(), angles.end(),
 		[](const AdaptiveAngle& a, const AdaptiveAngle& b) {
-			return a.m_dist > b.m_dist;
-		});
+		return a.m_dist > b.m_dist;
+	});
 
 	// the best angle should be at the front now.
 	AdaptiveAngle* best = &angles.front();
@@ -434,6 +435,7 @@ void HVH::DoRealAntiAim() {
 		}
 
 		float custom = g_menu.main.antiaim.body_fake_stand_custom.get() * 2.5;
+		float range1 = 180.f;
 		static int negative = false;
 
 		if (g_menu.main.antiaim.body_fake_stand_fakewalk.get()) {
@@ -458,24 +460,23 @@ void HVH::DoRealAntiAim() {
 					case 4:
 						g_cl.m_cmd->m_view_angles.y += 90.f;
 						break;
-					// custom
+						// custom
 					case 5:
 						g_cl.m_cmd->m_view_angles.y += custom;
 						break;
-					//twist
+						//twist
 					case 6:
 						//g_cl.m_cmd->m_view_angles.y += 180.f;
 						negative ? g_cl.m_cmd->m_view_angles.y += 110.f : g_cl.m_cmd->m_view_angles.y -= 110.f;
 						negative = !negative;
 						break;
-					//random
+						//fatman
 					case 7:
-						negative ? g_cl.m_cmd->m_view_angles.y += rand() % 45 : g_cl.m_cmd->m_view_angles.y -= rand() % 45;
+						negative ? g_cl.m_cmd->m_view_angles.y += 90.f : g_cl.m_cmd->m_view_angles.y -= 90.f;
 						negative = !negative;
 						break;
 					}
 				}
-
 				else if (air) {
 					switch (g_menu.main.antiaim.body_fake_air.get()) {
 
@@ -539,7 +540,8 @@ void HVH::DoRealAntiAim() {
 					break;
 					//random
 				case 7:
-					g_cl.m_cmd->m_view_angles.y += rand() % 180;
+					negative ? g_cl.m_cmd->m_view_angles.y += 90.f : g_cl.m_cmd->m_view_angles.y -= 90.f;
+					negative = !negative;
 					break;
 				}
 			}
@@ -612,33 +614,23 @@ void HVH::DoRealAntiAim() {
 				g_cl.m_cmd->m_view_angles.y = m_random_angle;
 				break;
 			}
+				  //distortion
 			case 5: {
 
 				float direction{};
-				float speed = g_menu.main.antiaim.distortion_speed.get();
+				//float speed = g_menu.main.antiaim.distortion_speed.get();
 
-				if (m_flicks % 2)
-				{
-					direction = std::fmod((g_csgo.m_globals->m_curtime * (5.f * 20.f)), 120.f);
-				}
-				else
-				{
-					direction = std::fmod(-(g_csgo.m_globals->m_curtime * (5.f * 20.f)), 120.f);
-				}
+				direction = std::fmod(-(g_csgo.m_globals->m_curtime * 100.f), negative ? 110.f : -110.f);
+				negative = !negative;
 
 				g_cl.m_cmd->m_view_angles.y += direction;
-
 				break;
-
 			}
-
-
 			default:
 				break;
 			}
 		}
 	}
-
 	// normalize angle.
 	math::NormalizeAngle(g_cl.m_cmd->m_view_angles.y);
 }

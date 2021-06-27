@@ -8,31 +8,6 @@ void Slider::draw() {
 	Color color = g_gui.m_color;
 	color.a() = m_parent->m_alpha;
 
-	static unsigned int s, v, i;
-	static float h, r, g, b, f, aa, q, t;
-
-	h = g_csgo.m_globals->m_realtime * 0.1f;
-	s = 1;
-	v = 1;
-
-	i = floor(h * 6);
-	f = h * 6 - i;
-	aa = v * (1 - s);
-	q = v * (1 - f * s);
-	t = v * (1 - (1 - f) * s);
-
-	switch (i % 6)
-	{
-	case 0: r = v, g = t, b = aa; break;
-	case 1: r = q, g = v, b = aa; break;
-	case 2: r = aa, g = v, b = t; break;
-	case 3: r = aa, g = q, b = v; break;
-	case 4: r = t, g = aa, b = v; break;
-	case 5: r = v, g = aa, b = q; break;
-	}
-
-	r = round(r * 255), g = round(g * 255), b = round(b * 255);
-
 	// draw label.
 	if (m_use_label)
 		render::menu_shade.string(p.x + LABEL_OFFSET, p.y - 2, { 205, 205, 205, m_parent->m_alpha }, m_label);
@@ -51,12 +26,7 @@ void Slider::draw() {
 	render::gradient(p.x + SLIDER_X_OFFSET + 1, p.y + m_offset + 1, m_w - SLIDER_X_OFFSET - 2, SLIDER_HEIGHT - 2, { 75, 75, 75, m_parent->m_alpha }, { 50, 50, 50, m_parent->m_alpha });
 
 	// bar.
-	if (g_menu.main.config.rainbow_menu.get()) {
-		render::rect_filled(p.x + SLIDER_X_OFFSET + 1, p.y + m_offset + 1, m_fill - 2, SLIDER_HEIGHT - 2, Color(r, g, b, 255));
-	}
-	else {
-		render::rect_filled(p.x + SLIDER_X_OFFSET + 1, p.y + m_offset + 1, m_fill - 2, SLIDER_HEIGHT - 2, color);
-	}
+	render::rect_filled(p.x + SLIDER_X_OFFSET + 1, p.y + m_offset + 1, m_fill - 2, SLIDER_HEIGHT - 2, color);
 	render::rect_filled_fade(p.x + SLIDER_X_OFFSET + 1, p.y + m_offset + 1, m_fill - 2, SLIDER_HEIGHT - 2, { 50, 50, 35, m_parent->m_alpha }, 0, 150);
 
 	// to stringstream.

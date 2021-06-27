@@ -156,10 +156,6 @@ bool Chams::OverridePlayer(int index) {
 	if (enemy && g_menu.main.players.chams_enemy.get(0))
 		return true;
 
-	// we have chams on friendly.
-	else if (!enemy && g_menu.main.players.chams_friendly.get(0))
-		return true;
-
 	return false;
 }
 
@@ -354,21 +350,46 @@ void Chams::RenderPlayer(Player* player) {
 	// this is the local player.
 	// we always draw the local player manually in drawmodel.
 	if (player->m_bIsLocalPlayer()) {
-		if (g_menu.main.players.chams_local_scope.get() && player->m_bIsScoped())
+		if (g_menu.main.players.chams_local.get() && g_menu.main.players.chams_local_scope.get() && player->m_bIsScoped()) {
 			SetAlpha(0.5f);
+			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
+			}
+			if (g_menu.main.players.chamstype.get() == 1) {
+				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
+			}
+			if (g_menu.main.players.chamstype.get() == 2) {
+				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			}
+		}
+		else if (g_menu.main.players.chams_local.get() && !g_menu.main.players.chams_local_scope.get() && g_menu.main.players.chams_local_blend.get() < 100.f && player->m_bIsScoped()) {
+			SetAlpha(g_menu.main.players.chams_local_blend.get() / 100.f);
+			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
+			}
+			if (g_menu.main.players.chamstype.get() == 1) {
+				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
+			}
+			if (g_menu.main.players.chamstype.get() == 2) {
+				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			}
+		}
+		else if (g_menu.main.players.chams_local_scope.get() && !g_menu.main.players.chams_local.get() && player->m_bIsScoped()) {
+			SetAlpha(0.5f);
+		}
 
 		else if (g_menu.main.players.chams_local.get()) {
 			// override blend.
 			SetAlpha(g_menu.main.players.chams_local_blend.get() / 100.f);
 
 			// set material and color.
-			if (g_menu.main.visuals.chamstype.get() == 0) {
+			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.visuals.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.visuals.chamstype.get() == 2) {
+			if (g_menu.main.players.chamstype.get() == 2) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 			}
 		}
@@ -389,56 +410,27 @@ void Chams::RenderPlayer(Player* player) {
 
 			SetAlpha(g_menu.main.players.chams_enemy_blend.get() / 100.f);
 
-			if (g_menu.main.visuals.chamstype.get() == 0) {
+			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_enemy_invis.get(), true);
 			}
-			if (g_menu.main.visuals.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_invis.get(), true);
 			}
-			if (g_menu.main.visuals.chamstype.get() == 2) {
-				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			if (g_menu.main.players.chamstype.get() == 2) {
+				SetupMaterial(debugambientcube, Color(r, g, b, 255), true);
 			}
 			player->DrawModel();
 		}
 
 		SetAlpha(g_menu.main.players.chams_enemy_blend.get() / 100.f);
 
-		if (g_menu.main.visuals.chamstype.get() == 0) {
+		if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
 			SetupMaterial(debugambientcube, g_menu.main.players.chams_enemy_vis.get(), false);
 		}
-		if (g_menu.main.visuals.chamstype.get() == 1) {
+		if (g_menu.main.players.chamstype.get() == 1) {
 			SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_vis.get(), false);
 		}
-		if (g_menu.main.visuals.chamstype.get() == 2) {
-			SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
-		}
-		player->DrawModel();
-	}
-
-	else if (!enemy && g_menu.main.players.chams_friendly.get(0)) {
-		if (g_menu.main.players.chams_friendly.get(1)) {
-
-			SetAlpha(g_menu.main.players.chams_friendly_blend.get() / 100.f);
-			if (g_menu.main.visuals.chamstype.get() == 0) {
-				SetupMaterial(debugambientcube, g_menu.main.players.chams_friendly_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 1) {
-				SetupMaterial(debugdrawflat, g_menu.main.players.chams_friendly_invis.get(), true);
-			}
-			if (g_menu.main.visuals.chamstype.get() == 2) {
-				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
-			}
-			player->DrawModel();
-		}
-
-		SetAlpha(g_menu.main.players.chams_friendly_blend.get() / 100.f);
-		if (g_menu.main.visuals.chamstype.get() == 0) {
-			SetupMaterial(debugambientcube, g_menu.main.players.chams_friendly_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 1) {
-			SetupMaterial(debugdrawflat, g_menu.main.players.chams_friendly_vis.get(), false);
-		}
-		if (g_menu.main.visuals.chamstype.get() == 2) {
+		if (g_menu.main.players.chamstype.get() == 2) {
 			SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
 		}
 		player->DrawModel();
@@ -449,22 +441,22 @@ void Chams::RenderPlayer(Player* player) {
 		if (g_csgo.m_gamerules->m_bFreezePeriod())
 			return;
 
-		if (g_menu.main.visuals.chams_fake.get() && g_menu.main.antiaim.fake_yaw.get())
+		if (g_menu.main.players.chams_fake.get() && g_menu.main.antiaim.fake_yaw.get())
 		{
 			if (g_menu.main.players.chams_local_scope.get() && player->m_bIsScoped())
 			{
-				SetAlpha((g_menu.main.visuals.chams_fake_blend.get() / 100.f) / 2.f);
-				SetupMaterial(g_menu.main.visuals.chams_fake_mat.get() == 0 ? debugambientcube : debugdrawflat, g_menu.main.visuals.chams_fake_col.get(), false);
+				SetAlpha((g_menu.main.players.chams_fake_blend.get() / 100.f) / 2.f);
+				SetupMaterial(g_menu.main.players.chams_fake_mat.get() == 0 ? debugambientcube : debugdrawflat, g_menu.main.players.chams_fake_col.get(), false);
 
 				g_cl.SetAngles2(ang_t(0.f, g_cl.m_radar.y, 0.f));
 			}
 			else
 			{
 				// override blend.
-				SetAlpha(g_menu.main.visuals.chams_fake_blend.get() / 100.f);
+				SetAlpha(g_menu.main.players.chams_fake_blend.get() / 100.f);
 
 				// set material and color.
-				SetupMaterial(g_menu.main.visuals.chams_fake_mat.get() == 0 ? debugambientcube : debugdrawflat, g_menu.main.visuals.chams_fake_col.get(), false);
+				SetupMaterial(g_menu.main.players.chams_fake_mat.get() == 0 ? debugambientcube : debugdrawflat, g_menu.main.players.chams_fake_col.get(), false);
 
 				g_cl.SetAngles2(ang_t(0.f, g_cl.m_radar.y, 0.f));
 			}

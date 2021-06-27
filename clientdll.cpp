@@ -160,7 +160,6 @@ void Hooks::FrameStageNotify(Stage_t stage) {
 		// restore non-compressed netvars.
 		// g_netdata.apply( );
 
-		g_cl.Skybox();
 		g_cl.ClanTag();
 		g_agents.SetupAgents();
 		g_skins.think();

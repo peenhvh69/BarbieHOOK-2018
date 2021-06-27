@@ -33,7 +33,6 @@ public:
 	void DrawHUD();
 	void UnlockHiddenConvars();
 	void ClanTag();
-	void Skybox();
 	void UpdateInformation();
 	void SetAngles();
 	void SetAngles2(ang_t angle);

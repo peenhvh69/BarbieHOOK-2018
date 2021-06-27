@@ -69,6 +69,14 @@ public:
 	std::vector< VisualImpactData_t > m_vis_impacts;
 	std::deque< ImpactRecord >        m_impacts;
 	std::deque< HitRecord >           m_hits;
+
+	float iHitDmg = NULL;
+	bool iHit = false;
+	bool iHeadshot = false;
+	bool canhit = false;
+
+	vec3_t iPlayerOrigin, iPlayermins, iPlayermaxs;
+	vec2_t iPlayerbottom, iPlayertop;
 };
 
 extern Shots g_shots;
