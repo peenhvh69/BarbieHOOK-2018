@@ -1,6 +1,7 @@
 
 *.obj
-/.vs/
-/Release/
-/output/
-ReleaseEx/
+.vs
+Release
+output
+ReleaseEx
+Debug
