@@ -12,7 +12,7 @@ public:
 	};
 
 public:
-	bool StartPrediction( AimPlayer* player );
+	bool StartPrediction( AimPlayer* player);
 	void PlayerMove( LagRecord* record );
 	void AirAccelerate( LagRecord* record, ang_t angle, float fmove, float smove );
 	void PredictAnimations( CCSGOPlayerAnimState* state, LagRecord* record );

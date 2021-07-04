@@ -105,8 +105,12 @@ void callbacks::HiddenCvar() {
 	g_cl.UnlockHiddenConvars();
 }
 
-bool callbacks::IsCustomTexture() {
-	return g_menu.main.players.chams_custom_texture.get();
+bool callbacks::IsCustomTextureLocal() {
+	return g_menu.main.players.chams_custom_texture_local.get();
+}
+
+bool callbacks::IsCustomTextureEnemy() {
+	return g_menu.main.players.chams_custom_texture_enemy.get();
 }
 
 bool callbacks::IsSkeletonOn() {
@@ -135,6 +139,29 @@ bool callbacks::IsNameOn() {
 
 bool callbacks::IsWeaponOn() {
 	return g_menu.main.players.weapon.get();
+}
+
+bool callbacks::AreIndicatorsOn() {
+	return g_menu.main.visuals.indicators.get();
+}
+
+bool callbacks::AreIndicatorsSupremacy() {
+	return g_menu.main.visuals.indicators_type.get() == 1;
+}
+
+bool callbacks::IsEnemyChams() {
+	return g_menu.main.players.chams_selection.get() == 1;
+}
+bool callbacks::IsLocalChams2() {
+	return g_menu.main.players.chams_selection.get() == 0;
+}
+
+bool callbacks::IsGlowOverlayOnLocal() {
+	return g_menu.main.players.chamstype_local.get() == 3;
+}
+
+bool callbacks::IsGlowOverlayOnEnemy() {
+	return g_menu.main.players.chamstype_enemy.get() == 3;
 }
 
 // menu elements

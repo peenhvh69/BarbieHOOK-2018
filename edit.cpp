@@ -47,23 +47,19 @@ void Edit::think() {
 			return;
 		}
 
-		for (int i{}; i <= 0xFE; ++i) {
-			g_csgo.m_input_system->EnableInput(false);
+		g_csgo.m_input_system->EnableInput(false);
+		if (!m_old_typing)
+			g_input.m_buffer = m_text;
 
-			size_t limit = 16;
+		else
+			m_text = g_input.m_buffer;
 
-			if (g_input.GetKeyPress(i)) {
-				if (!m_old_typing)
-					g_input.m_buffer = m_text;
-				else
-					m_text = g_input.m_buffer;
+		if (m_text.size() >= m_limit)
+			m_text = m_text.substr(0, m_limit);
 
-				if (m_text.size() >= limit)
-					m_text = m_text.substr(0, limit);
-			}
-			m_old_typing = true;
-		}
+		m_old_typing = true;
 	}
+
 	else m_old_typing = false;
 }
 

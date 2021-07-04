@@ -472,7 +472,7 @@ void HVH::DoRealAntiAim() {
 						break;
 						//fatman
 					case 7:
-						negative ? g_cl.m_cmd->m_view_angles.y += 90.f : g_cl.m_cmd->m_view_angles.y -= 90.f;
+						negative ? g_cl.m_cmd->m_view_angles.y = (g_cl.m_cmd->m_view_angles.y + 180.f) + 58.f : (g_cl.m_cmd->m_view_angles.y + 180.f) + 120.f;
 						negative = !negative;
 						break;
 					}
@@ -540,7 +540,7 @@ void HVH::DoRealAntiAim() {
 					break;
 					//random
 				case 7:
-					negative ? g_cl.m_cmd->m_view_angles.y += 90.f : g_cl.m_cmd->m_view_angles.y -= 90.f;
+					negative ? g_cl.m_cmd->m_view_angles.y = (g_cl.m_cmd->m_view_angles.y + 180.f) + 58.f : (g_cl.m_cmd->m_view_angles.y + 180.f) + 120.f;
 					negative = !negative;
 					break;
 				}
@@ -616,14 +616,20 @@ void HVH::DoRealAntiAim() {
 			}
 				  //distortion
 			case 5: {
-
 				float direction{};
-				//float speed = g_menu.main.antiaim.distortion_speed.get();
+				float speed = g_menu.main.antiaim.distortion_speed.get();
 
 				direction = std::fmod(-(g_csgo.m_globals->m_curtime * 100.f), negative ? 110.f : -110.f);
 				negative = !negative;
 
 				g_cl.m_cmd->m_view_angles.y += direction;
+				break;
+			}
+			case 6: {
+				if (g_csgo.m_globals->m_curtime <= g_cl.m_body_pred)
+					g_cl.m_cmd->m_view_angles.y = g_cl.m_radar.y + 180.f;
+				else
+					g_cl.m_cmd->m_view_angles.y = g_cl.m_local->m_flLowerBodyYawTarget() - 180.f;
 				break;
 			}
 			default:

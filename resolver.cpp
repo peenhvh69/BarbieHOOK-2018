@@ -494,7 +494,7 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record) {
 			// ok, no fucking update. apply big resolver.
 
 			// every third shot do some fuckery.
-			if (!(data->m_stand_index % 3))
+			if (!(data->m_shots % 3))
 				record->m_eye_angles.y += record->m_body + 90.f;
 
 			// jesus we can fucking stop missing can we?
@@ -504,7 +504,7 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record) {
 			}
 
 			// we missed 4 shots.
-			else if (data->m_stand_index > 4 && act != 980) {
+			else if (data->m_missed_shots == 4 && act != 980) {
 				// try backwards.
 				record->m_eye_angles.y = away + 180.f;
 			}
@@ -517,10 +517,10 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record) {
 	record->m_mode = Modes::RESOLVE_STAND2;
 	record->m_resolver_mode = "STAND";
 
-	switch (data->m_stand_index2 % 6) {
+	switch (data->m_stand_index2 % 8) {
 
 	case 0:
-		record->m_eye_angles.y = move->m_body;
+		record->m_eye_angles.y = record->m_body + 180.f;
 		break;
 
 	case 1:
@@ -532,20 +532,19 @@ void Resolver::ResolveStand(AimPlayer* data, LagRecord* record) {
 		break;
 
 	case 3:
-		record->m_eye_angles.y = record->m_body + 180.f;
-		break;
-
-
-	case 4:
 		record->m_eye_angles.y = record->m_body + 90.f;
 		break;
 
-	case 5:
+	case 4:
 		record->m_eye_angles.y = record->m_body - 90.f;
 		break;
 
+	case 5:
+		record->m_eye_angles.y = data->m_body_update - 90.f;
+		break;
+
 	case 6:
-		record->m_eye_angles.y = record->m_body;
+		record->m_eye_angles.y = data->m_body_update + 90.f;
 		break;
 
 	case 7:
@@ -628,7 +627,7 @@ void Resolver::ResolveAir(AimPlayer* data, LagRecord* record, Player* player) {
 	// this should be a rough estimation of where he is looking.
 	float velyaw = math::rad_to_deg(std::atan2(record->m_velocity.y, record->m_velocity.x));
 
-	switch (data->m_shots % 4) {
+	switch (data->m_missed_shots % 4) {
 	case 0:
 		record->m_eye_angles.y = velyaw + 180.f;
 		break;

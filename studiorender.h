@@ -163,6 +163,23 @@ public:
 	};
 };
 
+class IMaterialVar
+{
+public:
+	void SetVecValue(float r, float g, float b) {
+		using original_fn = void(__thiscall*)(IMaterialVar*, float, float, float);
+		return (*(original_fn**)this)[11](this, r, g, b);
+	}
+	void SetVecValue(int val) {
+		using original_fn = void(__thiscall*)(IMaterialVar*, int);
+		(*(original_fn**)this)[4](this, val);
+	}
+	void SetVecValue(float val) {
+		using original_fn = void(__thiscall*)(IMaterialVar*, float);
+		(*(original_fn**)this)[4](this, val);
+	}
+};
+
 class IMaterial {
 public:
 	enum indices : size_t {
@@ -171,6 +188,7 @@ public:
 		INCREMENTREFERENCECOUNT = 12,
 		ALPHAMODULATE           = 27,
 		COLORMODULATE           = 28,
+		FINDVAR					= 11,
 		SETFLAG                 = 29,
 		GETFLAG                 = 30
 	};
@@ -197,6 +215,10 @@ public:
 
 	__forceinline void ColorModulate( Color col ) {
 		ColorModulate( col.r( ) / 255.f, col.g( ) / 255.f, col.b( ) / 255.f );
+	}
+
+	__forceinline IMaterialVar* FindVar(const char* name, bool* found) {
+		return util::get_method< IMaterialVar* (__thiscall*)(IMaterial*, const char*, bool, bool) >(this, FINDVAR)(this, name, found, false);
 	}
 
 	__forceinline void SetFlag( int fl, bool set ) {

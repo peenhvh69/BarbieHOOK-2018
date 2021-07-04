@@ -133,14 +133,18 @@ public:
 
 	// found target stuff.
 	Player* m_target;
+	AimPlayer* m_data;
 	ang_t      m_angle;
 	vec3_t     m_aim;
 	float      m_damage;
 	LagRecord* m_record;
+	float      m_hitbox;
 
 	// fake latency stuff.
 	bool       m_fake_latency;
 	bool can_hit;
+
+	bool CanHit(vec3_t start, vec3_t end, LagRecord* record, int box, studiohdr_t* hdr);
 
 	bool m_stop;
 

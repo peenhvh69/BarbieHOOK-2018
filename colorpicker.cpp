@@ -49,7 +49,7 @@ void Colorpicker::draw() {
 	render::menu_shade.string(p.x + LABEL_OFFSET, p.y - 2, { 205, 205, 205, m_parent->m_alpha }, m_label);
 
 	// outline.
-	render::rect(p.x + m_w - COLORPICKER_WIDTH, p.y, COLORPICKER_WIDTH, COlORPICKER_HEIGHT, { 84, 84, 84, m_parent->m_alpha });
+	render::rect(p.x + m_w - COLORPICKER_WIDTH, p.y, COLORPICKER_WIDTH, COlORPICKER_HEIGHT, { 0, 0, 0, m_parent->m_alpha });
 
 	// make a copy of the color.
 	Color preview = m_color;
@@ -82,14 +82,13 @@ void Colorpicker::draw() {
 			p.y + COlORPICKER_HEIGHT + 2,
 			COLORPICKER_PICKER_SIZE,
 			COLORPICKER_PICKER_SIZE,
-			{ 48, 48, 48, m_parent->m_alpha });
+			{ 0, 0, 0, m_parent->m_alpha });
 	}
 }
 
 void Colorpicker::think() {
 	Rect  area{ m_parent->GetElementsRect() };
 	Point p{ area.x + m_pos.x, area.y + m_pos.y };
-	Rect preview{ p.x + m_w - COLORPICKER_WIDTH, p.y, COLORPICKER_WIDTH, COlORPICKER_HEIGHT };
 
 	if (m_open) {
 		Rect picker{ p.x + m_w - COLORPICKER_WIDTH, p.y + COlORPICKER_HEIGHT + 2, COLORPICKER_PICKER_SIZE, COLORPICKER_PICKER_SIZE };
@@ -97,7 +96,7 @@ void Colorpicker::think() {
 		if (g_input.IsCursorInRect(picker) && g_input.GetKeyState(VK_LBUTTON))
 			m_color = Colorpicker::ColorFromPos(g_input.m_mouse.x - (p.x + m_w - COLORPICKER_WIDTH), g_input.m_mouse.y - (p.y + COlORPICKER_HEIGHT + 2));
 
-		if (g_input.GetKeyState(VK_LBUTTON) && m_parent->m_active_element != this && !g_input.IsCursorInRect(picker)) {
+		if (!g_input.GetKeyState(VK_LBUTTON) || m_parent->m_active_element != this) {
 			m_open = false;
 
 			if (m_callback)

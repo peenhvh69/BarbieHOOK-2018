@@ -21,8 +21,15 @@ namespace callbacks {
 	bool IsWatermarkOn();
 	bool IsHitmarker();
 	bool ViewFOVOverride();
-	bool IsCustomTexture();
+	bool IsCustomTextureLocal();
+	bool IsCustomTextureEnemy();
 	bool FOVOverride();
+	bool AreIndicatorsOn();
+	bool AreIndicatorsSupremacy();
+	bool IsEnemyChams();
+	bool IsLocalChams2();
+	bool IsGlowOverlayOnLocal();
+	bool IsGlowOverlayOnEnemy();
 
 	//visuals
 	bool IsSkeletonOn();

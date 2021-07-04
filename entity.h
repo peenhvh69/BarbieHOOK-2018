@@ -632,6 +632,10 @@ public:
 		return get< float >(g_entoffsets.m_fImmuneToGunGameDamageTime);
 	}
 
+	__forceinline IClientEntityList* ce() {
+		return reinterpret_cast<IClientEntityList*>(this);
+	}
+
 	__forceinline bool &m_bHasHelmet() {
 		return get< bool >(g_entoffsets.m_bHasHelmet);
 	}
@@ -719,6 +723,11 @@ public:
 	__forceinline CBoneCache &m_BoneCache() {
 		// TODO; sig
 		return get< CBoneCache >(g_entoffsets.m_BoneCache);
+	}
+
+	__forceinline matrix3x4_t**& m_iBoneCache() {
+		// TODO; sig
+		return get< matrix3x4_t** >(g_entoffsets.m_BoneCache);
 	}
 
 	__forceinline EHANDLE &m_hObserverTarget() {

@@ -53,6 +53,8 @@ public:
 	float  m_auto_last;
 	float  m_view;
 
+	float m_drake_and_josh;
+
 public:
 	void IdealPitch( );
 	void AntiAimPitch( );

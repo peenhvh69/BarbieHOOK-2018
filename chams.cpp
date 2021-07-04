@@ -115,13 +115,34 @@ void Chams::init() {
 	std::ofstream("csgo/materials/glowOverlay.vmt") << R"#("VertexLitGeneric" 
 {
  "$additive" "1"
+ "$basetexture" "vgui/whiteadditive"
  "$envmap" "models/effects/cube_white"
- "$envmaptint" "[0 0.1 0.2]"
  "$envmapfresnel" "1"
- "$envmapfresnelminmaxexp" "[0 1 2]"
- "$ignorez" "1"
- "$alpha" "1"
+ "$alpha" ".8"
 })#";
+
+	std::ofstream("csgo/materials/ghost.vmt") << R"#("VertexLitGeneric" {
+		    "$additive"                    "1"
+		    "$envmap"                    "models/effects/cube_white"
+		    "$envmaptint"                "[1.0 1.0. 1.0]"
+		    "$envmapfresnel"            "1.0"
+		    "$envmapfresnelminmaxexp"    "[0.0 1.0 2.0]"
+		    "$alpha"                    "0.99"
+	})#";
+
+	std::ofstream("csgo/materials/chams.vmt") << R"#("VertexLitGeneric"
+{
+	  "$basetexture" "vgui/white_additive"
+	  "$ignorez" "0"
+	  "$additive" "0"
+	  "$envmap"  "models/effects/cube_white"
+	  "$normalmapalphaenvmapmask" "1"
+	  "$envmapfresnel" "1"
+	  "$envmapfresnelminmaxexp" "[0 1 2]"
+}
+)#";
+
+	//$additive 1 $envmap models/effects/cube_white $envmapfresnel 1 $alpha .8
 
 	// find stupid materials.
 	debugambientcube = g_csgo.m_material_system->FindMaterial(XOR("debug/debugambientcube"), XOR("Model textures"));
@@ -129,6 +150,12 @@ void Chams::init() {
 
 	debugdrawflat = g_csgo.m_material_system->FindMaterial(XOR("debug/debugdrawflat"), XOR("Model textures"));
 	debugdrawflat->IncrementReferenceCount();
+
+	glowoverlay = g_csgo.m_material_system->FindMaterial(XOR("chams"), XOR("Model textures"));
+	glowoverlay->IncrementReferenceCount();
+
+	glowoverlay1 = g_csgo.m_material_system->FindMaterial(XOR("chams"), XOR("Model textures"));
+	glowoverlay1->IncrementReferenceCount();
 
 	//skeet = g_csgo.m_material_system->FindMaterial(XOR("chams"), XOR("Model textures"));
 	//skeet->IncrementReferenceCount();
@@ -341,7 +368,6 @@ void Chams::RenderPlayer(Player* player) {
 	}
 
 	r = round(r * 255), g = round(g * 255), b = round(b * 255);
-
 	// restore.
 	g_csgo.m_studio_render->ForcedMaterialOverride(nullptr);
 	g_csgo.m_render_view->SetColorModulation(colors::white);
@@ -350,28 +376,39 @@ void Chams::RenderPlayer(Player* player) {
 	// this is the local player.
 	// we always draw the local player manually in drawmodel.
 	if (player->m_bIsLocalPlayer()) {
+		Color color = g_menu.main.players.chams_local_col.get();
+		g_chams.glowoverlay->FindVar("$envmaptint", nullptr)->SetVecValue(color.r() / 255.f, color.g() / 255.f, color.b() / 255.f);
+
 		if (g_menu.main.players.chams_local.get() && g_menu.main.players.chams_local_scope.get() && player->m_bIsScoped()) {
 			SetAlpha(0.5f);
-			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+			if (g_menu.main.players.chamstype_local.get() == 0) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype_local.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 2) {
+			if (g_menu.main.players.chamstype_local.get() == 2) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			}
+			if (g_menu.main.players.chamstype_local.get() == 3) {
+				SetupMaterial(glowoverlay, color, false);
+				SetupMaterial(glowoverlay, g_menu.main.players.overlay_base_color_local.get(), false);
 			}
 		}
 		else if (g_menu.main.players.chams_local.get() && !g_menu.main.players.chams_local_scope.get() && g_menu.main.players.chams_local_blend.get() < 100.f && player->m_bIsScoped()) {
 			SetAlpha(g_menu.main.players.chams_local_blend.get() / 100.f);
-			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+			if (g_menu.main.players.chamstype_local.get() == 0) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype_local.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 2) {
+			if (g_menu.main.players.chamstype_local.get() == 2) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			}
+			if (g_menu.main.players.chamstype_local.get() == 3) {
+				SetupMaterial(glowoverlay, color, false);
+				SetupMaterial(glowoverlay, g_menu.main.players.overlay_base_color_local.get(), false);
 			}
 		}
 		else if (g_menu.main.players.chams_local_scope.get() && !g_menu.main.players.chams_local.get() && player->m_bIsScoped()) {
@@ -383,14 +420,18 @@ void Chams::RenderPlayer(Player* player) {
 			SetAlpha(g_menu.main.players.chams_local_blend.get() / 100.f);
 
 			// set material and color.
-			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+			if (g_menu.main.players.chamstype_local.get() == 0) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype_local.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_local_col.get(), false);
 			}
-			if (g_menu.main.players.chamstype.get() == 2) {
+			if (g_menu.main.players.chamstype_local.get() == 2) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+			}
+			if (g_menu.main.players.chamstype_local.get() == 3) {
+				SetupMaterial(glowoverlay, color, false);
+				SetupMaterial(glowoverlay, g_menu.main.players.overlay_base_color_local.get(), false);
 			}
 		}
 
@@ -406,32 +447,45 @@ void Chams::RenderPlayer(Player* player) {
 	}
 
 	if (enemy && g_menu.main.players.chams_enemy.get(0)) {
+		Color colorvis = g_menu.main.players.chams_enemy_vis.get();
+		Color colorxqz = g_menu.main.players.chams_enemy_invis.get();
+		g_chams.glowoverlay->FindVar("$envmaptint", nullptr)->SetVecValue(colorvis.r() / 255.f, colorvis.g() / 255.f, colorvis.b() / 255.f);
+		g_chams.glowoverlay1->FindVar("$envmaptint", nullptr)->SetVecValue(colorxqz.r() / 255.f, colorxqz.g() / 255.f, colorxqz.b() / 255.f);
+
 		if (g_menu.main.players.chams_enemy.get(1)) {
 
 			SetAlpha(g_menu.main.players.chams_enemy_blend.get() / 100.f);
 
-			if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+			if (g_menu.main.players.chamstype_enemy.get() == 0) {
 				SetupMaterial(debugambientcube, g_menu.main.players.chams_enemy_invis.get(), true);
 			}
-			if (g_menu.main.players.chamstype.get() == 1) {
+			if (g_menu.main.players.chamstype_enemy.get() == 1) {
 				SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_invis.get(), true);
 			}
-			if (g_menu.main.players.chamstype.get() == 2) {
+			if (g_menu.main.players.chamstype_enemy.get() == 2) {
 				SetupMaterial(debugambientcube, Color(r, g, b, 255), true);
+			}
+			if (g_menu.main.players.chamstype_enemy.get() == 3) {
+				SetupMaterial(glowoverlay1, colorxqz, true);
+				SetupMaterial(glowoverlay1, g_menu.main.players.overlay_base_color_enemy_xqz.get(), true);
 			}
 			player->DrawModel();
 		}
 
 		SetAlpha(g_menu.main.players.chams_enemy_blend.get() / 100.f);
 
-		if (g_menu.main.players.chamstype.get() == 0 || !g_menu.main.players.chams_custom_texture.get()) {
+		if (g_menu.main.players.chamstype_enemy.get() == 0) {
 			SetupMaterial(debugambientcube, g_menu.main.players.chams_enemy_vis.get(), false);
 		}
-		if (g_menu.main.players.chamstype.get() == 1) {
+		if (g_menu.main.players.chamstype_enemy.get() == 1) {
 			SetupMaterial(debugdrawflat, g_menu.main.players.chams_enemy_vis.get(), false);
 		}
-		if (g_menu.main.players.chamstype.get() == 2) {
+		if (g_menu.main.players.chamstype_enemy.get() == 2) {
 			SetupMaterial(debugambientcube, Color(r, g, b, 255), false);
+		}
+		if (g_menu.main.players.chamstype_enemy.get() == 3) {
+			SetupMaterial(glowoverlay, colorvis, false);
+			SetupMaterial(glowoverlay, g_menu.main.players.overlay_base_color_enemy_vis.get(), false);
 		}
 		player->DrawModel();
 	}

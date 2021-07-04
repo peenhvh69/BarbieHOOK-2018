@@ -1386,6 +1386,86 @@ void Aimbot::find() {
 	}
 }
 
+bool Aimbot::CanHit(vec3_t start, vec3_t end, LagRecord* record, int box, studiohdr_t* hdr)
+{
+	if (!record || !record->m_player)
+		return false;
+
+	// backup player
+	const auto backup_origin = record->m_player->m_vecOrigin();
+	const auto backup_abs_origin = record->m_player->GetAbsOrigin();
+	const auto backup_abs_angles = record->m_player->GetAbsAngles();
+	const auto backup_obb_mins = record->m_player->m_vecMins();
+	const auto backup_obb_maxs = record->m_player->m_vecMaxs();
+	const auto backup_cache = record->m_player->m_iBoneCache();
+
+	// always try to use our aimbot matrix first.
+	auto matrix = record->m_bones;
+
+	// this is basically for using a custom matrix.
+	//if (in_shot)
+		//matrix = bones;
+
+	if (!matrix)
+		return false;
+
+	const model_t* model = record->m_player->GetModel();
+	if (!model)
+		return false;
+
+	studiohdr_t* hdr2 = g_csgo.m_model_info->GetStudioModel(model);
+	if (!hdr2)
+		return false;
+
+	mstudiohitboxset_t* set = hdr2->GetHitboxSet(record->m_player->m_nHitboxSet());
+	if (!set)
+		return false;
+
+	mstudiobbox_t* bbox = set->GetHitbox(box);
+	if (!bbox)
+		return false;
+
+	vec3_t min, max;
+	const auto IsCapsule = bbox->m_radius != -1.f;
+
+	if (IsCapsule) {
+		math::VectorTransform(bbox->m_mins, matrix[bbox->m_bone], min);
+		math::VectorTransform(bbox->m_maxs, matrix[bbox->m_bone], max);
+		const auto dist = math::SegmentToSegment(start, end, min, max);
+
+		if (dist < bbox->m_radius) {
+			return true;
+		}
+	}
+	else {
+		CGameTrace tr;
+
+		// setup trace data
+		record->m_player->m_vecOrigin() = record->m_origin;
+		record->m_player->SetAbsOrigin(record->m_origin);
+		record->m_player->SetAbsAngles(record->m_abs_ang);
+		record->m_player->m_vecMins() = record->m_mins;
+		record->m_player->m_vecMaxs() = record->m_maxs;
+		record->m_player->m_iBoneCache() = reinterpret_cast<matrix3x4_t**>(matrix);
+
+		// setup ray and trace.
+		g_csgo.m_engine_trace->ClipRayToEntity(Ray(start, end), MASK_SHOT, record->m_player, &tr);
+
+		record->m_player->m_vecOrigin() = backup_origin;
+		record->m_player->SetAbsOrigin(backup_abs_origin);
+		record->m_player->SetAbsAngles(backup_abs_angles);
+		record->m_player->m_vecMins() = backup_obb_mins;
+		record->m_player->m_vecMaxs() = backup_obb_maxs;
+		record->m_player->m_iBoneCache() = backup_cache;
+
+		// check if we hit a valid player / hitgroup on the player and increment total hits.
+		if (tr.m_entity == record->m_player && game::IsValidHitgroup(tr.m_hitgroup))
+			return true;
+	}
+
+	return false;
+}
+
 bool Aimbot::CheckHitchance(Player* player, const ang_t& angle) {
 	constexpr float HITCHANCE_MAX = 100.f;
 	constexpr int   SEED_MAX = 255;
@@ -2494,6 +2574,7 @@ bool Aimbot::SelectTarget(LagRecord* record, const vec3_t& aim, float damage) {
 }
 
 void Aimbot::apply() {
+	int hitbox;
 	bool attack, attack2;
 
 	// attack states.
@@ -2531,7 +2612,7 @@ void Aimbot::apply() {
 			g_cl.m_cmd->m_view_angles -= g_cl.m_local->m_aimPunchAngle() * g_csgo.weapon_recoil_scale->GetFloat();
 
 		// store fired shot.
-		g_shots.OnShotFire(m_target ? m_target : nullptr, m_target ? m_damage : -1.f, g_cl.m_weapon_info->m_bullets, m_target ? m_record : nullptr);
+		g_shots.OnShotFire(m_target ? m_target : nullptr, m_target ? m_damage : -1.f, g_cl.m_weapon_info->m_bullets, m_target ? m_record : nullptr, m_hitbox);
 
 		// set that we fired.
 		g_cl.m_shot = true;

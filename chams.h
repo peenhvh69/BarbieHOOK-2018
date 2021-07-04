@@ -41,6 +41,8 @@ public:
 	IMaterial* skeet;
 	IMaterial* onetap;
 	IMaterial* shaded;
+	IMaterial* glowoverlay;
+	IMaterial* glowoverlay1;
 };
 
 extern Chams g_chams;

@@ -101,14 +101,14 @@ bool CSGO::init( ) {
 	cl_fullupdate                           = m_cvar->FindVar( HASH( "cl_fullupdate" ) );
 	r_DrawSpecificStaticProp                = m_cvar->FindVar( HASH( "r_DrawSpecificStaticProp" ) );
 	cl_crosshair_sniper_width               = m_cvar->FindVar( HASH( "cl_crosshair_sniper_width" ) );
-	viewmodel_offset_x = m_cvar->FindVar(HASH("viewmodel_offset_x"));
-	viewmodel_offset_y = m_cvar->FindVar(HASH("viewmodel_offset_y"));
-	viewmodel_offset_z = m_cvar->FindVar(HASH("viewmodel_offset_z"));
+	viewmodel_offset_x						= m_cvar->FindVar(HASH("viewmodel_offset_x"));
+	viewmodel_offset_y						= m_cvar->FindVar(HASH("viewmodel_offset_y"));
+	viewmodel_offset_z						= m_cvar->FindVar(HASH("viewmodel_offset_z"));
 	hud_scaling                             = m_cvar->FindVar( HASH( "hud_scaling" ) );
     sv_clip_penetration_traces_to_players   = m_cvar->FindVar( HASH( "sv_clip_penetration_traces_to_players" ) );
     weapon_accuracy_shotgun_spread_patterns = m_cvar->FindVar( HASH( "weapon_accuracy_shotgun_spread_patterns" ) );
 	net_showfragments                       = m_cvar->FindVar( HASH( "net_showfragments" ) );
-
+	
 	// hehe xd.
 	name->m_callbacks.RemoveAll( );
 	//cl_lagcompensation->m_callbacks.RemoveAll( );

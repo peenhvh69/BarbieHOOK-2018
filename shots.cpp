@@ -2,7 +2,7 @@
 
 Shots g_shots{ };
 
-void Shots::OnShotFire(Player* target, float damage, int bullets, LagRecord* record) {
+void Shots::OnShotFire(Player* target, float damage, int bullets, LagRecord* record, int hitbox) {
 
 	// iterate all bullets in this shot.
 	for (int i{ }; i < bullets; ++i) {
@@ -13,6 +13,7 @@ void Shots::OnShotFire(Player* target, float damage, int bullets, LagRecord* rec
 		shot.m_time = game::TICKS_TO_TIME(g_cl.m_local->m_nTickBase());
 		shot.m_lat = g_cl.m_latency;
 		shot.m_damage = damage;
+		shot.m_hitbox = hitbox;
 		shot.m_pos = g_cl.m_local->GetShootPosition();
 
 		// we are not shooting manually.
@@ -171,43 +172,44 @@ void Shots::OnImpact(IGameEvent* evt) {
 
 	std::string balls = std::to_string(semen);
 
-	// we did not hit jackshit, or someone else.
-	if (!trace.m_entity || !trace.m_entity->IsPlayer() || trace.m_entity != target)
-		g_notify.add(XOR("missed shot due to spread\n"), g_gui.m_color);
+	if (g_menu.main.misc.debug_mode.get()) {
+		g_notify.add(tfm::format(XOR("angle shot at: %s\n"), balls));
+	}
+	
 
-	// we should have 100% hit this player..
-	// this is a miss due to wrong angles.
-	else if (trace.m_entity == target) {
-		size_t mode = shot->m_record->m_mode;
-
-		// if we miss a shot on body update.
-		// we can chose to stop shooting at them.
-		if (mode == Resolver::Modes::RESOLVE_BODY) {
-			--data->m_body_index;
+	/*
+			const auto spread_miss = !c_aimhelper::can_hit_hitbox(shot.start, shot.server_info.impacts.back(), &shot.record, hdr, shot.hitbox);
+		if (spread_miss)
+		{
+			logging->info(_("Missed shot due to spread."));
+			++info->missed_due_to_spread;
 		}
+		else
+		{
+			char msg[255];
+			static const auto miss_msg = __("Missed shot due to resolver | stage %i.");
+			_rt(miss, miss_msg);
+			sprintf_s(msg, miss, info->stage);
+			logging->info(msg);
+			++info->missed_due_to_resolver;
+		} 
+	*/
 
-		else if (mode == Resolver::Modes::RESOLVE_LASTMOVE) {
-			--data->m_last_move;
-		}
+	//spread miss setup
+	const model_t* model = shot->m_record->m_player->GetModel();
+	if (!model)
+		return;
 
-		else if (mode == Resolver::Modes::RESOLVE_UNKNOWM) {
-			--data->m_unknown_move;
-		}
-
-		else if (mode == Resolver::Modes::RESOLVE_STAND) {
-			--data->m_stand_index;
-		}
-
-		else if (mode == Resolver::Modes::RESOLVE_STAND2) {
-			--data->m_stand_index2;
-		}
-
-		else if (mode == Resolver::Modes::RESOLVE_BODY) {
-			--data->m_body_index;
-		}
-
+	const auto spread_miss = g_aimbot.CanHit(start, end, shot->m_record, shot->m_hitbox, g_csgo.m_model_info->GetStudioModel(model));
+	//if (!trace.m_entity && g_aimbot.CanHit(start, end, shot->m_record, shot->m_hitbox, g_csgo.m_model_info->GetStudioModel(model))) {
+	if (!trace.m_entity && trace.m_entity != target) {
 		++data->m_missed_shots;
 	}
+
+	//}
+	//else {
+		//--data->m_missed_shots;
+	//}
 
 	// restore player to his original state.
 	backup.restore(target);
@@ -281,17 +283,6 @@ void Shots::OnHurt(IGameEvent* evt) {
 		iPlayermins = { iPlayerOrigin.x, iPlayerOrigin.y, iPlayermins.z };
 		iPlayermaxs = { iPlayerOrigin.x, iPlayerOrigin.y, iPlayermaxs.z + 8.f };
 
-		/*
-		if (group != HITGROUP_HEAD) {
-			g_csgo.m_sound->EmitAmbientSound(XOR("buttons/arena_switch_press_02.wav"), 1.f);
-		}
-		else if (group == HITGROUP_HEAD) {
-			g_csgo.m_sound->EmitAmbientSound(XOR("training/bell_impact.wav"), 1.f);
-		}
-		if (group != HITGROUP_HEAD) {
-			g_csgo.m_sound->EmitAmbientSound(fart_wav, .5f);
-		}
-		*/
 		if (g_menu.main.misc.hitmarker_dropdown.get() == 0) {
 			g_csgo.m_sound->EmitAmbientSound(XOR("buttons/arena_switch_press_02.wav"), 1.f);
 		}
@@ -299,19 +290,23 @@ void Shots::OnHurt(IGameEvent* evt) {
 			g_csgo.m_sound->EmitAmbientSound(XOR("training/bell_impact.wav"), 1.f);
 		}
 		else if (g_menu.main.misc.hitmarker_dropdown.get() == 2) {
-			PlaySound(bubble, NULL, SND_ASYNC | SND_MEMORY);
+			PlaySound(fatality_wav, nullptr, SND_ASYNC | SND_MEMORY);
 		}
 		else if (g_menu.main.misc.hitmarker_dropdown.get() == 3) {
-			PlaySound(bonk, NULL, SND_ASYNC | SND_MEMORY);
+			PlaySound(bonk, nullptr, SND_ASYNC | SND_MEMORY);
 		}
-	}
+		else if (g_menu.main.misc.hitmarker_dropdown.get() == 4) {
+			PlaySound(neverlose, nullptr, SND_ASYNC | SND_MEMORY);
+		}
+		else if (g_menu.main.misc.hitmarker_dropdown.get() == 5) {
+			PlaySound(cod, nullptr, SND_ASYNC | SND_MEMORY);
+		}
+		else if (g_menu.main.misc.hitmarker_dropdown.get() == 6) {
+			PlaySound(bameware, nullptr, SND_ASYNC | SND_MEMORY);
+		}
 
-	//if (g_menu.main.misc.hitmarker2.get()) {
-	//	g_visuals.m_hit_duration = 1.f;
-	//	g_visuals.m_hit_start = g_csgo.m_globals->m_curtime;
-	//	g_visuals.m_hit_end = g_visuals.m_hit_start + g_visuals.m_hit_duration;
-	//	g_csgo.m_sound->EmitAmbientSound(XOR("training/bell_impact.wav"), 1.f);
-	//}
+		//XOR("skeet"), XOR("bell"), XOR("fatality"), XOR("bonk"), XOR("neverlose"), XOR("cod"), XOR("bameware")
+	}
 
 	// print this shit.
 	if (g_menu.main.misc.notifications.get(1)) {

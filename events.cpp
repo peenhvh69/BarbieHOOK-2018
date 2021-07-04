@@ -129,19 +129,7 @@ void events::player_hurt(IGameEvent* evt) {
 
 			g_notify.add(tfm::format(XOR("%s hit you in the %s for %i damage (%i hp remaining)\n"), name, g_shots.m_groups[evt->m_keys->FindKey(HASH("hitgroup"))->GetInt()], damage, hp));
 		}
-
-		if (g_menu.main.misc.funny_on_death.get()) {
-			int hp2 = evt->m_keys->FindKey(HASH("health"))->GetInt();
-			if (attacker != g_cl.m_local && victim == g_cl.m_local && hp2 == 0 && g_menu.main.misc.funny_on_death.get()) {
-				switch (rand() % 3) {
-					case 0: PlaySound(fart_wav, NULL, SND_ASYNC | SND_MEMORY); break;
-					case 1: PlaySound(oof_wav, NULL, SND_ASYNC | SND_MEMORY); break;
-					case 2: PlaySound(brap_wav, NULL, SND_ASYNC | SND_MEMORY); break;
-				}	
-			}
-		}
-
-
+		
 		// a player damaged the local player.
 		if (attacker->index() > 0 && attacker->index() < 64 && victim == g_cl.m_local)
 			g_visuals.m_offscreen_damage[attacker->index()] = { 3.f, 0.f, colors::red };

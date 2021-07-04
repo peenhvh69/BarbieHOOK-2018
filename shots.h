@@ -10,6 +10,7 @@ public:
 	float      m_time, m_lat, m_damage;
 	vec3_t     m_pos;
 	bool       m_matched;
+	int		   m_hitbox;
 };
 
 class VisualImpactData_t {
@@ -46,7 +47,7 @@ public:
 class Shots {
 
 public:
-	void OnShotFire(Player* target, float damage, int bullets, LagRecord* record);
+	void OnShotFire(Player* target, float damage, int bullets, LagRecord* record, int hitbox);
 	void OnImpact(IGameEvent* evt);
 	void OnHurt(IGameEvent* evt);
 

@@ -99,31 +99,30 @@ void Visuals::IndicateAngles()
 	if (render::WorldToScreen(pos, tmp))
 	{
 		vec2_t draw_tmp;
-		const vec3_t real_pos(50.f * std::cos(math::deg_to_rad(g_cl.m_radar.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_radar.y)) + pos.y, pos.z);
-
-		if (render::WorldToScreen(real_pos, draw_tmp))
-		{
-			render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 });
-			render::esp_small.string(draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 }, "FAKE", render::ALIGN_LEFT);
-		}
-
-		if (g_menu.main.antiaim.fake_yaw.get())
-		{
-			const vec3_t fake_pos(50.f * cos(math::deg_to_rad(g_cl.m_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_angle.y)) + pos.y, pos.z);
+		if (g_menu.main.antiaim.fake_yaw.get() > 0) {
+			const vec3_t fake_pos(50.f * std::cos(math::deg_to_rad(g_cl.m_radar.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_radar.y)) + pos.y, pos.z);
 
 			if (render::WorldToScreen(fake_pos, draw_tmp))
 			{
 				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 });
-				render::esp_small.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "REAL", render::ALIGN_LEFT);
+				render::esp_small.string(draw_tmp.x, draw_tmp.y, { 255, 0, 0, 255 }, "FAKE", render::ALIGN_LEFT);
 			}
 		}
 
-		if (g_menu.main.antiaim.body_fake_stand.get() == 1 || g_menu.main.antiaim.body_fake_stand.get() == 2 || g_menu.main.antiaim.body_fake_stand.get() == 3 || g_menu.main.antiaim.body_fake_stand.get() == 4 || g_menu.main.antiaim.body_fake_stand.get() == 5 || g_menu.main.antiaim.body_fake_stand.get() == 6)
+		const vec3_t real_pos(50.f * cos(math::deg_to_rad(g_cl.m_angle.y)) + pos.x, 50.f * sin(math::deg_to_rad(g_cl.m_angle.y)) + pos.y, pos.z);
+
+		if (render::WorldToScreen(real_pos, draw_tmp))
+		{
+			render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 });
+			render::esp_small.string(draw_tmp.x, draw_tmp.y, { 0, 255, 0, 255 }, "REAL", render::ALIGN_LEFT);
+		}
+
+		if (g_menu.main.antiaim.body_fake_stand.get() > 0)
 		{
 			float lby = g_cl.m_local->m_flLowerBodyYawTarget();
 			const vec3_t lby_pos(50.f * cos(math::deg_to_rad(lby)) + pos.x,
 				50.f * sin(math::deg_to_rad(lby)) + pos.y, pos.z);
-
+			
 			if (render::WorldToScreen(lby_pos, draw_tmp))
 			{
 				render::line(tmp.x, tmp.y, draw_tmp.x, draw_tmp.y, { 255, 255, 255, 255 });
@@ -274,8 +273,10 @@ void Visuals::Hitmarker() {
 			box.y = g_shots.iPlayerbottom.y - box.h;
 
 			// text damage
-			if (!g_shots.iHeadshot)
+			if (g_aimbot.m_hitbox != HITGROUP_HEAD)
 				render::hud.string(box.x + box.w / 2, box.y - render::esp.m_size.m_height - 10, { 255, 255, 255, alpha }, "-" + out, render::ALIGN_CENTER);
+			else
+				render::hud.string(box.x + box.w / 2, box.y - render::esp.m_size.m_height - 10, { 255, 0, 0, alpha }, "HEADSHOT -" + out, render::ALIGN_CENTER);
 		}
 	}
 }
@@ -385,7 +386,7 @@ void Visuals::Spectators() {
 
 		//watermark comment POG
 		if (g_menu.main.misc.watermark.get()) {
-			render::menu_shade.string(g_cl.m_width - 10, 26 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
+			render::menu_shade.string(g_cl.m_width - 10, 29 + (i * (h + 2)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
 		}
 		else {
 			render::menu_shade.string(g_cl.m_width - 10, 8 + (i * (h + 3)), { 255, 255, 255, 179 }, name, render::ALIGN_RIGHT);
@@ -418,50 +419,52 @@ void Visuals::StatusIndicators() {
 	struct Indicator_t { Color color; std::string text; };
 	std::vector< Indicator_t > indicators{ };
 
-	// LC
-	if (g_menu.main.visuals.indicators.get() && ((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND))) {
-		Indicator_t ind{ };
-		ind.color = g_cl.m_lagcomp ? 0xff15c27b : 0xff0000ff;
-		ind.text = XOR("LC");
+	//if (g_menu.main.visuals.indicators_type.get() == 1) {
+		// LC
+		if (g_menu.main.visuals.indicators.get() && ((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND))) {
+			Indicator_t ind{ };
+			ind.color = g_cl.m_lagcomp ? 0xff15c27b : 0xff0000ff;
+			ind.text = XOR("LC");
 
-		indicators.push_back(ind);
-	}
+			indicators.push_back(ind);
+		}
 
-	// LBY
-	if (g_menu.main.visuals.indicators.get()) {
-		// get the absolute change between current lby and animated angle.
-		float change = std::abs(math::NormalizedAngle(g_cl.m_body - g_cl.m_angle.y));
+		// LBY
+		if (g_menu.main.visuals.indicators.get()) {
+			// get the absolute change between current lby and animated angle.
+			float change = std::abs(math::NormalizedAngle(g_cl.m_body - g_cl.m_angle.y));
 
-		Indicator_t ind{ };
-		ind.color = change > 35.f ? 0xff15c27b : 0xff0000ff;
-		ind.text = XOR("LBY");
-		indicators.push_back(ind);
-	}
+			Indicator_t ind{ };
+			ind.color = change > 35.f ? 0xff15c27b : 0xff0000ff;
+			ind.text = XOR("LBY");
+			indicators.push_back(ind);
+		}
 
-	// PING
-	if (g_menu.main.visuals.indicators.get()) {
-		Indicator_t ind{ };
-		ind.color = g_aimbot.m_fake_latency ? 0xff15c27b : 0xff0000ff;
-		ind.text = XOR("PING");
+		// PING
+		if (g_menu.main.visuals.indicators.get()) {
+			Indicator_t ind{ };
+			ind.color = g_aimbot.m_fake_latency ? 0xff15c27b : 0xff0000ff;
+			ind.text = XOR("PING");
 
-		indicators.push_back(ind);
-	}
+			indicators.push_back(ind);
+		}
 
-	if (g_menu.main.visuals.indicators.get() && g_aimbot.m_baim_toggle) {
-		Indicator_t ind{};
-		ind.color = 0xff15c27b;
-		ind.text = XOR("BAIM");
+		if (g_menu.main.visuals.indicators.get() && g_aimbot.m_baim_toggle) {
+			Indicator_t ind{};
+			ind.color = 0xff15c27b;
+			ind.text = XOR("BAIM");
 
-		indicators.push_back(ind);
-	}
+			indicators.push_back(ind);
+		}
 
-	if (g_menu.main.visuals.indicators.get() && g_aimbot.m_damage_toggle) {
-		Indicator_t ind{};
-		ind.color = 0xff15c27b;
-		ind.text = XOR("DMG");
+		if (g_menu.main.visuals.indicators.get() && g_aimbot.m_damage_toggle) {
+			Indicator_t ind{};
+			ind.color = 0xff15c27b;
+			ind.text = XOR("DMG");
 
-		indicators.push_back(ind);
-	}
+			indicators.push_back(ind);
+		}
+	//}
 
 	if (indicators.empty())
 		return;
@@ -469,10 +472,14 @@ void Visuals::StatusIndicators() {
 	// iterate and draw indicators.
 	for (size_t i{ }; i < indicators.size(); ++i) {
 		auto& indicator = indicators[i];
-
-		render::indicator.string(12, g_cl.m_height - 426 - (30 * i), indicator.color, indicator.text);
-		//render::indicator.string(12, g_cl.m_height - 426 - (30 * i), Color{ 10, 10, 10, 125 }, "LBY");
-		//render::indicator.string(12, g_cl.m_height - 426 - (30 * 1), indicator.color, std::to_string(ping) + "ms");
+		//comment for peen g_cl.m_height - 426 is the middle of the screen.
+		//if (g_menu.main.visuals.indicators_type.get() == 1) {
+			render::indicator.string(12, g_cl.m_height - 75 - (30 * i), indicator.color, indicator.text);
+		//}
+		//else {
+		//	render::indicator.string(12, g_cl.m_height - 75 - (30 * i), indicator.color, indicator.text);
+		//}
+		
 	}
 
 	auto local_player = g_cl.m_local;
@@ -508,7 +515,6 @@ void Visuals::StatusIndicators() {
 	float time_remain_to_update = next_lby_update[local_player->index()] - local_player->m_flSimulationTime();
 	float time_update = next_lby_update[local_player->index()];
 
-
 	float fill = 0;
 	fill = (((time_remain_to_update)));
 	static float add = 0.000f;
@@ -528,8 +534,16 @@ void Visuals::StatusIndicators() {
 	//render::arccircle(12 + 60, g_cl.m_height - 74 + 23 - 9, 6, 8, 0, 340 * add, color1337);
 	//render::drawCircle(90, 87, 100, { 255,255,255,255 });
 	if (!((g_cl.m_buttons & IN_JUMP) || !(g_cl.m_flags & FL_ONGROUND)) && g_menu.main.visuals.indicators.get()) {
-		render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
-		render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 7, 0, 340 * add, 3, color1337);
+		if (g_menu.main.visuals.lby_indicator_type.get() == 1) {
+			render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
+			render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 7, 0, 340 * add, 3, color1337);
+		} 
+		else if(g_menu.main.visuals.lby_indicator_type.get() == 2){
+			render::rect_filled(13, g_cl.m_height - 423 + 26, 48, 4, { 10, 10, 10, 125 });
+			render::rect_filled(13, g_cl.m_height - 423 + 26, add * 40, 2, color1337);
+		}
+		//render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 8, 0, 360, 5, { 0,0,0,125 }); //lby circle
+		//render::draw_arc(12 + 60, g_cl.m_height - 426 + 23 - 9, 7, 0, 340 * add, 3, color1337);
 	}
 	/*std::string add1 = tfm::format(XOR("%i"), add);
 	render::esp_small.string(500, 500, color1337, add1, render::ALIGN_CENTER);*/

@@ -50,13 +50,14 @@ bool LagCompensation::StartPrediction(AimPlayer* data) {
 	if (std::abs(g_cl.m_arrival_tick - simulation) >= 128)
 		return true;
 
+	// lag = time_to_ticks(player->get_simtime() - player->get_old_simtime());
+
 	// compute the amount of lag that we will predict for, if we have one set of data, use that.
 	// if we have more data available, use the prevoius lag delta to counter weird fakelags that switch between 14 and 2.
-	int lag = (size <= 2) ? game::TIME_TO_TICKS(record->m_sim_time - data->m_records[1]->m_sim_time)
-		: game::TIME_TO_TICKS(data->m_records[1]->m_sim_time - data->m_records[2]->m_sim_time);
+	int lag =(size <= 2) ? game::TIME_TO_TICKS(record->m_sim_time - data->m_records[1]->m_sim_time) :  game::TIME_TO_TICKS(data->m_records[1]->m_sim_time - data->m_records[2]->m_sim_time);
 
 	// clamp this just to be sure.
-	math::clamp(lag, 1, 15);
+	math::clamp(lag, 0, 17);
 
 	// get the delta in ticks between the last server net update
 	// and the net update on which we created this record.

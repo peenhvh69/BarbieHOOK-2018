@@ -624,7 +624,7 @@ void Client::UpdateInformation() {
 	// standing update every 1.1s
 	else if (m_anim_time > m_body_pred) {
 		m_body = m_angle.y;
-		m_body_pred = m_anim_time + 1.1f;
+		m_body_pred = m_anim_time + 1.125f;
 	}
 
 	// save updated data.
