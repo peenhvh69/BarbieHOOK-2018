@@ -141,16 +141,16 @@ void events::player_hurt(IGameEvent* evt) {
 		if (attacker == g_cl.m_local && hp == 0) {
 			switch (rand() % 4) {
 			case 0:
-				g_csgo.m_engine->ExecuteClientCmd("say 1'd by BarbieHOOK | discord.gg/efFwS76heW");
+				g_csgo.m_engine->ExecuteClientCmd("say 1'd by herberthook.tk | discord.gg/efFwS76heW");
 				break;
 			case 1:
 				g_csgo.m_engine->ExecuteClientCmd("say get jiggl'd loser | discord.gg/efFwS76heW");
 				break;
 			case 2:
-				g_csgo.m_engine->ExecuteClientCmd("say ez for BarbieHOOK | discord.gg/efFwS76heW");
+				g_csgo.m_engine->ExecuteClientCmd("say ez for herberthook.tk | discord.gg/efFwS76heW");
 				break;
 			case 3:
-				g_csgo.m_engine->ExecuteClientCmd("say uff ya$$$ tapped nn dog ez for BarbieHOOK");
+				g_csgo.m_engine->ExecuteClientCmd("say uff ya$$$ tapped nn dog ez for herberthook.tk");
 				break;
 			}
 		}

@@ -170,10 +170,13 @@ void Shots::OnImpact(IGameEvent* evt) {
 	//niggas
 	float semen = shot->m_record->m_eye_angles.y;
 
+	std::string niggas = shot->m_record->m_resolver_mode;
+
 	std::string balls = std::to_string(semen);
 
 	if (g_menu.main.misc.debug_mode.get()) {
 		g_notify.add(tfm::format(XOR("angle shot at: %s\n"), balls));
+		g_notify.add(tfm::format(XOR("resolver mode used: %s\n"), niggas));
 	}
 	
 
@@ -289,9 +292,6 @@ void Shots::OnHurt(IGameEvent* evt) {
 		else if (g_menu.main.misc.hitmarker_dropdown.get() == 1) {
 			g_csgo.m_sound->EmitAmbientSound(XOR("training/bell_impact.wav"), 1.f);
 		}
-		else if (g_menu.main.misc.hitmarker_dropdown.get() == 2) {
-			PlaySound(fatality_wav, nullptr, SND_ASYNC | SND_MEMORY);
-		}
 		else if (g_menu.main.misc.hitmarker_dropdown.get() == 3) {
 			PlaySound(bonk, nullptr, SND_ASYNC | SND_MEMORY);
 		}
@@ -375,22 +375,9 @@ void Shots::OnHurt(IGameEvent* evt) {
 
 	// if we miss a shot on body update.
 	// we can chose to stop shooting at them.
-	if (mode == Resolver::Modes::RESOLVE_BODY && data->m_body_index > 0)
-		--data->m_body_index;
-
-	else if (mode == Resolver::Modes::RESOLVE_STAND && data->m_stand_index > 0)
+	if (mode == Resolver::Modes::RESOLVE_STAND && data->m_stand_index > 0)
 		--data->m_stand_index;
 
-	else if (mode == Resolver::Modes::RESOLVE_STAND2 && data->m_stand_index2 > 0)
-		--data->m_stand_index2;
-
-	else if (mode == Resolver::Modes::RESOLVE_LASTMOVE && data->m_last_move > 0) {
-		--data->m_last_move;
-	}
-
-	else if (mode == Resolver::Modes::RESOLVE_UNKNOWM && data->m_unknown_move > 0) {
-		--data->m_unknown_move;
-	}
 
 	// if we hit head
 	// shoot at this 5 more times.

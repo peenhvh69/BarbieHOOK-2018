@@ -23,36 +23,40 @@ void Form::draw() {
 	color.a() = m_alpha;
 
 	// background.
-	render::rect_filled(m_x, m_y, m_width, m_height, { 12, 12, 12, m_alpha });
+	render::rect_filled(m_x, m_y, m_width, m_height, { 36, 36, 36, m_alpha });
 
 	// lbgt line
-	render::gradient1337(m_x + 7, m_y + 7, m_width / 2 - 7, 1, { 99, 160, 200, m_alpha }, { 179, 102, 181, m_alpha });
-	render::gradient1337(m_x + (m_width / 2), m_y + 7, m_width / 2 - 7, 1, { 179, 102, 181, m_alpha }, { 230, 217, 100, m_alpha });
+	//render::gradient1337(m_x + 7, m_y + 7, m_width / 2 - 7, 1, { 99, 160, 200, m_alpha }, { 179, 102, 181, m_alpha });
+	//render::gradient1337(m_x + (m_width / 2), m_y + 7, m_width / 2 - 7, 1, { 179, 102, 181, m_alpha }, { 230, 217, 100, m_alpha });
+	//render::gradient1337(m_x + 7, m_y + 7 + 1, m_width / 2 - 7, 1, { 49, 79, 99, m_alpha }, { 89, 50, 90, m_alpha });
+	//render::gradient1337(m_x + (m_width / 2), m_y + 7 + 1, m_width / 2 - 7, 1, { 89, 50, 90, m_alpha }, { 114, 108, 49, m_alpha });
 
-	render::gradient1337(m_x + 7, m_y + 7 + 1, m_width / 2 - 7, 1, { 49, 79, 99, m_alpha }, { 89, 50, 90, m_alpha });
-	render::gradient1337(m_x + (m_width / 2), m_y + 7 + 1, m_width / 2 - 7, 1, { 89, 50, 90, m_alpha }, { 114, 108, 49, m_alpha });
+	//render::gradient1337(m_x + 1, m_y + 2, m_width / 2, 3, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha }, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha });
+	//render::gradient1337(m_x + (m_width / 2) - 1, m_y + 2, m_width / 2, 3, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha }, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha });
+
+	render::rect_filled(m_x, m_y, m_width, 15, { 44, 44, 44, m_alpha });
 
 	// border.
-	render::rect(m_x, m_y, m_width, m_height, { 5, 5, 5, m_alpha });
-	render::rect(m_x + 1, m_y + 1, m_width - 2, m_height - 2, { 60, 60, 60, m_alpha });
-	render::rect(m_x + 2, m_y + 2, m_width - 4, m_height - 4, { 40, 40, 40, m_alpha });
-	render::rect(m_x + 3, m_y + 3, m_width - 6, m_height - 6, { 40, 40, 40, m_alpha });
-	render::rect(m_x + 4, m_y + 4, m_width - 8, m_height - 8, { 40, 40, 40, m_alpha });
-	render::rect(m_x + 5, m_y + 5, m_width - 10, m_height - 10, { 60, 60, 60, m_alpha });
+	//render::rect(m_x, m_y, m_width, m_height - 2, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha });
+	//render::rect(m_x + 1, m_y + 1, m_width - 2, m_height - 2, { g_gui.m_color.r(), g_gui.m_color.g(), g_gui.m_color.b(), m_alpha });
+	//render::rect(m_x + 2, m_y + 2, m_width - 4, m_height - 4, { 40, 40, 40, m_alpha });
+	//render::rect(m_x + 3, m_y + 3, m_width - 6, m_height - 6, { 40, 40, 40, m_alpha });
+	//render::rect(m_x + 4, m_y + 4, m_width - 8, m_height - 8, { 40, 40, 40, m_alpha });
+	//render::rect(m_x + 5, m_y + 5, m_width - 10, m_height - 10, { 60, 60, 60, m_alpha });
 
 	// draw tabs if we have any.
 	if (!m_tabs.empty()) {
 		// tabs background and border.
 		Rect tabs_area = GetTabsRect();
 
-		render::rect_filled(tabs_area.x, tabs_area.y, tabs_area.w, tabs_area.h, { 17, 17, 17, m_alpha });
-		render::rect(tabs_area.x, tabs_area.y, tabs_area.w, tabs_area.h, { 0, 0, 0, m_alpha });
-		render::rect(tabs_area.x + 1, tabs_area.y + 1, tabs_area.w - 2, tabs_area.h - 2, { 48, 48, 48, m_alpha });
+		//render::rect_filled(tabs_area.x, tabs_area.y, tabs_area.w, tabs_area.h, { 17, 17, 17, m_alpha });
+		//render::rect(tabs_area.x, tabs_area.y, tabs_area.w, tabs_area.h, { 0, 0, 0, m_alpha });
+		//render::rect(tabs_area.x + 1, tabs_area.y + 1, tabs_area.w - 2, tabs_area.h - 2, { 48, 48, 48, m_alpha });
 
 		for (size_t i{}; i < m_tabs.size(); ++i) {
 			const auto& t = m_tabs[i];
 			// render::menu_shade.string(tabs_area.x + (i * (tabs_area.w / m_tabs.size())) + 12, tabs_area.y + 1, t == m_active_tab ? Color{ 255, 0, 153, 255 } : Color{ 152, 152, 152, m_alpha }, t->m_title);
-			render::menu_shade.string(tabs_area.x + (i * (tabs_area.w / m_tabs.size())) + 12, tabs_area.y + 2, t == m_active_tab ? color : Color{ 152, 152, 152, m_alpha }, t->m_title);
+			render::menu_shade.string(tabs_area.x + (i * (tabs_area.w / m_tabs.size())) + 11, tabs_area.y + 2, t == m_active_tab ? color : Color{ 152, 152, 152, m_alpha }, t->m_title);
 		}
 
 		// this tab has elements.
@@ -60,14 +64,14 @@ void Form::draw() {
 			// elements background and border.
 			Rect el = GetElementsRect();
 
-			render::rect_filled(el.x, el.y, el.w, el.h, { 17, 17, 17, m_alpha });
+			render::rect_filled(el.x, el.y, el.w, el.h, { 31, 31, 31, m_alpha });
 			render::rect(el.x, el.y, el.w, el.h, { 0, 0, 0, m_alpha });
 			render::rect(el.x + 1, el.y + 1, el.w - 2, el.h - 2, { 48, 48, 48, m_alpha });
 
 			std::string date = XOR(__DATE__);
 
-			std::string text = tfm::format(XOR("BarbieHOOK"));
-			render::menu_shade.string(el.x + el.w - 5, el.y + el.h - 16, { 205, 205, 205, m_alpha }, text, render::ALIGN_RIGHT);
+			std::string text = tfm::format(XOR("herberthook.tk"));
+			render::menu_shade.string(m_x + 3, m_y + 1, { 205, 205, 205, m_alpha }, text, render::ALIGN_LEFT);
 
 			// iterate elements to display.
 			for (const auto& e : m_active_tab->m_elements) {

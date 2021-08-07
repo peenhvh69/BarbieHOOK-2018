@@ -164,6 +164,14 @@ bool callbacks::IsGlowOverlayOnEnemy() {
 	return g_menu.main.players.chamstype_enemy.get() == 3;
 }
 
+bool callbacks::IsBulletTracerOn() {
+	return g_menu.main.visuals.impact_beams.get();
+}
+
+bool callbacks::IsRainbowTracerOff() {
+	return !g_menu.main.visuals.impact_beams_rainbow.get();
+}
+
 // menu elements
 bool callbacks::IsWatermarkOn() {
 	return g_menu.main.misc.watermark.get();

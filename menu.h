@@ -1126,6 +1126,7 @@ public:
 	Dropdown      lby_indicator_type;
 	Checkbox      tracers;
 	Checkbox      impact_beams;
+	Checkbox      impact_beams_rainbow;
 	Colorpicker   impact_beams_color;
 	Colorpicker   impact_beams_hurt_color;
 	Slider        impact_beams_time;
@@ -1242,13 +1243,23 @@ public:
 		impact_beams.setup(XOR("beam bullettracer"), XOR("impact_beams"));
 		RegisterElement(&impact_beams, 1);
 
-		impact_beams_color.setup(XOR("bullettracer color"), XOR("impact_beams_color"), colors::light_blue);
+		impact_beams_rainbow.setup(XOR("rainbow bullettracer"), XOR("impact_beams_rainbow"));
+		impact_beams_rainbow.AddShowCallback(callbacks::IsBulletTracerOn);
+		RegisterElement(&impact_beams_rainbow, 1);
+
+		impact_beams_color.setup(XOR("bullettracer color"), XOR("impact_beams_color"), colors::red);
+		impact_beams_color.AddShowCallback(callbacks::IsBulletTracerOn);
+		impact_beams_color.AddShowCallback(callbacks::IsRainbowTracerOff);
 		RegisterElement(&impact_beams_color, 1);
 
-		impact_beams_hurt_color.setup(XOR("bullettracer hurt color"), XOR("impact_beams_hurt_color"), colors::red);
+		impact_beams_hurt_color.setup(XOR("bullettracer hurt color"), XOR("impact_beams_hurt_color"), colors::green);
+		impact_beams_hurt_color.AddShowCallback(callbacks::IsBulletTracerOn);
+		impact_beams_hurt_color.AddShowCallback(callbacks::IsRainbowTracerOff);
 		RegisterElement(&impact_beams_hurt_color, 1);
 
 		impact_beams_time.setup(XOR("bullettracer beam time"), XOR("impact_beams_time"), 1.f, 10.f, true, 0, 1.f, 1.f, XOR(L"s"));
+		impact_beams_time.AddShowCallback(callbacks::IsBulletTracerOn);
+		impact_beams_time.AddShowCallback(callbacks::IsRainbowTracerOff);
 		RegisterElement(&impact_beams_time, 1);
 
 		thirdperson.setup(XOR("thirdperson"), XOR("thirdperson"));

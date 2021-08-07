@@ -1826,8 +1826,6 @@ void Visuals::DrawBeams() {
 
 				end = start + (dir * dist);
 
-				// setup beam info.
-				// note - dex; possible beam models: sprites/physbeam.vmt | sprites/white.vmt
 				beam_info.m_vecStart = start;
 				beam_info.m_vecEnd = end;
 				beam_info.m_nModelIndex = g_csgo.m_model_info->GetModelIndex(XOR("sprites/purplelaser1.vmt"));
@@ -1846,17 +1844,51 @@ void Visuals::DrawBeams() {
 				beam_info.m_bRenderable = true;  // must be true or you won't see the beam.
 				beam_info.m_nFlags = 0;
 
-				if (!impact->m_hit_player) {
-					beam_info.m_flRed = g_menu.main.visuals.impact_beams_color.get().r();
-					beam_info.m_flGreen = g_menu.main.visuals.impact_beams_color.get().g();
-					beam_info.m_flBlue = g_menu.main.visuals.impact_beams_color.get().b();
+				//hsv
+				static unsigned int s, v, i;
+				static float h, r, g, b, f, p, q, anal;
+
+				h = g_csgo.m_globals->m_realtime * 1.f;
+				s = 1;
+				v = 1;
+
+				i = floor(h * 6);
+				f = h * 6 - i;
+				p = v * (1 - s);
+				q = v * (1 - f * s);
+				anal = v * (1 - (1 - f) * s);
+
+				switch (i % 6)
+				{
+				case 0: r = v, g = anal, b = p; break;
+				case 1: r = q, g = v, b = p; break;
+				case 2: r = p, g = v, b = anal; break;
+				case 3: r = p, g = q, b = v; break;
+				case 4: r = anal, g = p, b = v; break;
+				case 5: r = v, g = p, b = q; break;
 				}
 
-				else {
-					beam_info.m_flRed = g_menu.main.visuals.impact_beams_hurt_color.get().r();
-					beam_info.m_flGreen = g_menu.main.visuals.impact_beams_hurt_color.get().g();
-					beam_info.m_flBlue = g_menu.main.visuals.impact_beams_hurt_color.get().b();
+				r = round(r * 255), g = round(g * 255), b = round(b * 255);
+
+				if (!g_menu.main.visuals.impact_beams_rainbow.get()) {
+					if (!impact->m_hit_player) {
+						beam_info.m_flRed = g_menu.main.visuals.impact_beams_color.get().r();
+						beam_info.m_flGreen = g_menu.main.visuals.impact_beams_color.get().g();
+						beam_info.m_flBlue = g_menu.main.visuals.impact_beams_color.get().b();
+					}
+					else if (impact->m_hit_player) {
+						beam_info.m_flRed = g_menu.main.visuals.impact_beams_hurt_color.get().r();
+						beam_info.m_flGreen = g_menu.main.visuals.impact_beams_hurt_color.get().g();
+						beam_info.m_flBlue = g_menu.main.visuals.impact_beams_hurt_color.get().b();
+					}
 				}
+				else {
+					beam_info.m_flRed = Color(r, g, b, 255).r();
+					beam_info.m_flGreen = Color(r, g, b, 255).g();
+					beam_info.m_flBlue = Color(r, g, b, 255).b();
+				}
+
+
 
 				// attempt to render the beam.
 				beam = game::CreateGenericBeam(beam_info);

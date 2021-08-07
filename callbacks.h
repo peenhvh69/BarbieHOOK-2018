@@ -30,6 +30,8 @@ namespace callbacks {
 	bool IsLocalChams2();
 	bool IsGlowOverlayOnLocal();
 	bool IsGlowOverlayOnEnemy();
+	bool IsBulletTracerOn();
+	bool IsRainbowTracerOff();
 
 	//visuals
 	bool IsSkeletonOn();

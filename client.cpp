@@ -10,7 +10,7 @@ char username[33] = "\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0
 // init routine.
 ulong_t __stdcall Client::init(void* arg) {
 	// if not in interwebz mode, the driver will not set the username.
-	g_cl.m_user = XOR("BarbieHOOK");
+	g_cl.m_user = XOR("herberthook.tk");
 
 	// stop here if we failed to acquire all the data needed from csgo.
 	if (!g_csgo.init())
@@ -71,14 +71,17 @@ void Client::DrawHUD() {
 	r = round(r * 255), g = round(g * 255), b = round(b * 255);
 
 	std::stringstream ss;
-	ss << tfm::format(XOR("BarbieHOOK | fps: %i | ms: %i"), fps, ms);
+	if (g_csgo.m_engine->IsConnected())
+		ss << tfm::format(XOR("herberthook.tk | fps: %i | not connected"), fps);
+	else
+		ss << tfm::format(XOR("herberthook.tk | fps: %i | latency: %i ms"), fps, ms);
 
 	render::FontSize_t size = render::hud.size(ss.str().c_str());
 
 	Color semen = g_gui.m_color;
 
 	// background.
-	render::rect_filled(m_width - size.m_width - 20, 10, size.m_width + 10, size.m_height + 2, { 12, 12, 12, 255 });
+	/*render::rect_filled(m_width - size.m_width - 20, 10, size.m_width + 10, size.m_height + 2, { 12, 12, 12, 255 });
 
 	if (g_menu.main.misc.rainbow_menu_type.get() == 0) {
 		render::rect_filled(m_width - size.m_width - 20, 8, size.m_width + 10, 2, g_gui.m_color);
@@ -95,7 +98,7 @@ void Client::DrawHUD() {
 	render::rect(m_width - size.m_width - 20 - 2, 8 - 2, size.m_width + 14, size.m_height + 8, { 40, 40, 40, 245 });
 	render::rect(m_width - size.m_width - 20 - 3, 8 - 3, size.m_width + 16, size.m_height + 10, { 40, 40, 40, 245 });
 	render::rect(m_width - size.m_width - 20 - 4, 8 - 4, size.m_width + 18, size.m_height + 12, { 40, 40, 40, 245 });
-	render::rect(m_width - size.m_width - 20 - 5, 8 - 5, size.m_width + 20, size.m_height + 14, { 60, 60, 60, 245 });
+	render::rect(m_width - size.m_width - 20 - 5, 8 - 5, size.m_width + 20, size.m_height + 14, { 60, 60, 60, 245 });*/
 
 	// text.
 	render::hud.string(m_width - 15, 10, { 255, 255, 255 }, ss.str().c_str(), render::ALIGN_RIGHT);
@@ -119,10 +122,10 @@ void Client::ClanTag()
 		using SetClanTag_t = int(__fastcall*)(const char*, const char*);
 		static auto SetClanTagFn = pattern::find(g_csgo.m_engine_dll, XOR("53 56 57 8B DA 8B F9 FF 15")).as<SetClanTag_t>();
 
-		SetClanTagFn(tag.c_str(), XOR("BarbieHOOK"));
+		SetClanTagFn(tag.c_str(), XOR("herberthook"));
 	};
 
-	std::string szClanTag = XOR("BarbieHOOK");
+	std::string szClanTag = XOR("herberthook");
 	std::string szSuffix = XOR("");
 	static int iPrevFrame = 0;
 	static bool bReset = false;
@@ -135,7 +138,7 @@ void Client::ClanTag()
 		{
 			if (is_freeze_period)
 			{
-				SetClanTag("BarbieHOOK"); //Project-X
+				SetClanTag("herberthook");
 			}
 			is_freeze_period = false;
 			return;
@@ -144,29 +147,23 @@ void Client::ClanTag()
 		is_freeze_period = true;
 
 		if (iPrevFrame != int(g_csgo.m_globals->m_curtime * 2.9) % 14) {
-			switch (int(g_csgo.m_globals->m_curtime * 2.9) % 22) {
-			case 0: {  SetClanTag("BarbieHOOK"); break; }
-			case 1: {  SetClanTag("arbieHOOK "); break; }
-			case 2: {  SetClanTag("rbieHOOK  "); break; }
-			case 3: {  SetClanTag("bieHOOK   "); break; }
-			case 4: {  SetClanTag("ieHOOK    "); break; }
-			case 5: {  SetClanTag("eHOOK     "); break; }
-			case 6: {  SetClanTag("HOOK      "); break; }
-			case 7: {  SetClanTag("OOK       "); break; }
-			case 8: {  SetClanTag("OK        "); break; }
-			case 9: {  SetClanTag("K         "); break; }
-			case 10: { SetClanTag("          "); break; }
-			case 11: { SetClanTag("         B"); break; }
-			case 12: { SetClanTag("        Ba"); break; }
-			case 13: { SetClanTag("       Bar"); break; }
-			case 14: { SetClanTag("      Barb"); break; }
-			case 15: { SetClanTag("     Barbi"); break; }
-			case 16: { SetClanTag("    Barbie"); break; }
-			case 17: { SetClanTag("   BarbieH"); break; }
-			case 18: { SetClanTag("  BarbieHO"); break; }
-			case 19: { SetClanTag(" BarbieHOO"); break; }
-			case 20: { SetClanTag("BarbieHOOK"); break; }
-			case 21: { SetClanTag("BarbieHOOK"); break; }
+			switch (int(g_csgo.m_globals->m_curtime * 2.9) % 19) {
+			case 0: {  SetClanTag("herbert"); break; }
+			case 1: {  SetClanTag("erbert "); break; }
+			case 2: {  SetClanTag("rbert  "); break; }
+			case 3: {  SetClanTag("bert   "); break; }
+			case 4: {  SetClanTag("ert    "); break; }
+			case 5: {  SetClanTag("rt     "); break; }
+			case 6: {  SetClanTag("t      "); break; }
+			case 10: { SetClanTag("       "); break; }
+			case 11: { SetClanTag("       h"); break; }
+			case 12: { SetClanTag("      he"); break; }
+			case 13: { SetClanTag("     her"); break; }
+			case 14: { SetClanTag("    herb"); break; }
+			case 15: { SetClanTag("   herbe"); break; }
+			case 16: { SetClanTag("  herber"); break; }
+			case 17: { SetClanTag(" herbert"); break; }
+			case 18: { SetClanTag(" herbert"); break; }
 			default:;
 			}
 			iPrevFrame = int(g_csgo.m_globals->m_curtime * 2.9) % 14;
@@ -680,7 +677,7 @@ void Client::print(const std::string text, ...) {
 	r = round(r * 255), g = round(g * 255), b = round(b * 255);
 
 	// print to console.
-	g_csgo.m_cvar->ConsoleColorPrintf(g_gui.m_color, XOR("[BarbieHOOK] "));
+	g_csgo.m_cvar->ConsoleColorPrintf(g_gui.m_color, XOR("[herberthook.tk] "));
 	g_csgo.m_cvar->ConsoleColorPrintf(colors::white, buf.c_str());
 }
 
